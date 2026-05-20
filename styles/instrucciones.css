@@ -1,0 +1,232 @@
+/* SECTION 2: Instrucciones */
+.instrucciones {
+  display: none;
+  position: fixed;
+  inset: 0;
+  overflow-y: auto;
+  z-index: 50;
+  background-image: url("../src/bgpattern-b.webp");
+}
+
+.instrucciones::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  z-index: 0;
+}
+
+.instrucciones.activo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Tarjeta principal */
+#instrucciones-card {
+  position: relative;
+  z-index: 1;
+  overflow: visible;
+  background-color: whitesmoke;
+  width: min(80%, 950px);
+  border-radius: 45px;
+  box-shadow: 0 15px 20px rgba(0, 0, 0, 0.25);
+  border-bottom: 12px solid var(--naranja-claro);
+  padding-bottom: 1.5rem;
+  box-shadow:
+    rgba(0, 0, 0, 0.25) 0px 14px 28px,
+    rgba(0, 0, 0, 0.22) 0px 10px 10px;
+}
+
+.instrucciones-title {
+  padding: 30px 1.5rem 20px;
+  color: var(--white);
+  text-align: center;
+}
+
+.instrucciones-title h2 {
+  text-align: center;
+  font-weight: 600;
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  letter-spacing: 0.04em;
+  color: var(--azul);
+}
+
+.instrucciones-title p {
+  color: #091c53;
+  font-size: 20px;
+  letter-spacing: 0.1em;
+  font-weight: bold;
+}
+
+/* Contenido */
+#card-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 1.5rem 1.5rem;
+  min-height: 420px;
+}
+
+/* Imagen del personaje: sobresale de la tarjeta */
+#card-img-character {
+  width: clamp(260px, 35vw, 400px);
+  height: auto;
+  flex-shrink: 0;
+  align-self: flex-end;
+  margin-left: -80px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Lado derecho */
+#card-info-leftside {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 360px;
+  margin-right: 10px;
+}
+
+/* Imagen tutorial centrada */
+#card-img-tutorial {
+  display: block;
+  width: min(100%, 450px);
+  max-height: 270px;
+  margin: 0 auto;
+  object-fit: contain;
+  box-shadow: rgba(0, 0, 0, 0.45) 0px 25px 20px -20px;
+}
+
+/* Texto */
+#card-step-box {
+  display: flex;
+  align-items: center;
+  gap: 0; /* importante */
+}
+
+/* Círculo */
+#step-circle {
+  min-width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7b4bc4, #9c6cf0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 2.5rem;
+  font-weight: bold;
+  position: relative;
+  z-index: 2;
+}
+
+/* Caja */
+#step-content {
+  padding: 20px 30px 20px 80px;
+  border-radius: 50px;
+  margin-left: -60px;
+  flex: 1;
+}
+
+/* Texto */
+#card-description {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+#card-text {
+  margin: 20px 0;
+  color: var(--negro-azul);
+  min-height: 80px;
+}
+
+#card-text h3 {
+  margin-bottom: 5px;
+}
+
+/* Botones */
+#card-btns {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: auto;
+  flex-wrap: wrap;
+}
+
+.card-btn {
+  font-size: 1.1rem;
+  padding: 0.75rem 2.5rem;
+  border: none;
+  border-radius: 6px;
+  background: var(--naranja-claro);
+  color: var(--white);
+  cursor: pointer;
+  transition: opacity 0.2s;
+  box-shadow: 0 15px 20px rgba(0, 0, 0, 0.25);
+}
+
+.card-btn:hover {
+  opacity: 0.85;
+}
+
+#btn-anterior {
+  display: none;
+  color: var(--negro-azul);
+  background-color: transparent;
+  box-shadow: none;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  #card-info {
+    flex-direction: column;
+    align-items: center;
+    min-height: auto;
+  }
+
+  #card-img-character {
+    display: none;
+  }
+
+  #card-info-leftside {
+    width: 100%;
+    min-height: auto;
+    margin-right: 0;
+  }
+
+  #card-img-tutorial {
+    max-width: 100%;
+  }
+
+  #card-btns {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .instrucciones {
+    padding-right: 10px;
+    padding-left: 100px;
+  }
+
+  #instrucciones-card {
+    width: 100%;
+    border-radius: 28px;
+  }
+
+  .instrucciones-title p {
+    font-size: 16px;
+  }
+
+  .card-btn {
+    width: 100%;
+    padding: 0.75rem 1rem;
+  }
+
+  #card-btns {
+    width: 100%;
+  }
+}

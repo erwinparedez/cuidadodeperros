@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sitio Web</title>
+    <link rel="stylesheet" href="styles/index.css">
+    <link rel="stylesheet" href="styles/navbar.css">
+    <link rel="stylesheet" href="styles/canvas.css">
+    <link rel="stylesheet" href="styles/instrucciones.css">
+    <link rel="stylesheet" href="styles/configuraciones.css">
+    <link rel="stylesheet" href="styles/menu.css">
+</head>
+
+<section class="pantalla-no-disponible">
+    <img src="./src/gameover.webp" alt="No disponible en móvil" class="img-no-disponible">
+    <h2 class="titulo-no-disponible">Lo sentimos</h2>
+    <p class="texto-no-disponible">Solo disponible para computadoras</p>
+</section>
+
+<body>
+    <nav id="navbar-box">
+        <div class="nav-menu icono-item">
+            <button class="btn-nav" id="btn-nav1"><img src="./src/arrow-icon.webp" alt="icono"></button>
+            <span class="text-font">Volver</span>
+        </div>
+
+        <div class="nav-config">
+            <div class="icono-item">
+                <button class="btn-nav" id="btn-nav2"><img src="./src/help-icon.webp" alt="icono"></button>
+                <span class="text-font">Instrucciones</span>
+            </div>
+            <div class="icono-item audio-btn">
+                <button id="btn-nav3"><img src="./src/music-icon.webp" alt="icono"></button>
+                <span class="text-font">Con Música</span>
+            </div>
+            <div class="icono-item audio-btn">
+                <button id="btn-nav4"><img src="./src/volume-icon.webp" alt="icono"></button>
+                <span class="text-font">Con Efectos de sonido</span>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="menu-juegos activo" id="menu-juegos">
+            <div class="juegos-contenido">
+                <h2>MINIJUEGOS</h2>
+                <div class="juegos-grid">
+                    <button class="juego-item">
+                        <img src="../src/miniatura-a.webp" alt="minijuego de alimentos">
+                    </button>
+                    <button class="juego-item">
+                        <img src="../src/miniatura-b.webp" alt="minijuego de higiene">
+                    </button>
+                    <button class="juego-item">
+                        <img src="../src/miniatura-c.webp" alt="minijuego de enfermedades">
+                    </button>
+                    <button class="juego-item">
+                        <img src="../src/miniatura-d.webp" alt="minijuego de salud fisica y emocional">
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section class="canvas-box oculto">
+            <canvas id="game"></canvas>
+        </section>
+
+        <section class="instrucciones" id="instrucciones-box">
+            <div id="instrucciones-card">
+                <div class="instrucciones-title">
+                    <h2>Instrucciones</h2>
+                    <p>Aprende a jugar siguiendo estos pasos</p>
+                </div>
+
+                <div id="card-info">
+                    <img src="./src/game-c/bug01.webp" alt="Personajes" id="card-img-character">
+
+                    <div id="card-info-leftside">
+                        <img src="./src/game-c/guide-b.webp" alt="Tutorial" id="card-img-tutorial">
+                        <div class="text-font" id="card-text">
+                            <div id="card-step-box">
+                                <div id="step-circle">01</div>
+                                <div id="step-content">
+                                    <p id="card-description">
+                                        ...
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="card-btns">
+                            <button class="card-btn text-font" id="btn-anterior">ANTERIOR</button>
+                            <button class="card-btn text-font" id="btn-siguiente">SIGUIENTE</button>
+                            <button class="card-btn text-font" id="btn-entendido">¡A JUGAR!</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <script type="module" src="js/audio-btns.js"></script>
+    <script type="module" src="js/menu.js"></script>
+    <script type="module" src="js/navbar.js"></script>
+    <script type="module" src="js/instrucciones.js"></script>
+</body>
+
+</html>

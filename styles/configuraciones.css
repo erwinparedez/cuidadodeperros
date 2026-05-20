@@ -1,0 +1,45 @@
+/* botones de audio */
+.icono-item {
+  color: var(--white);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.icono-item img {
+  width: auto;
+  height: 60%;
+}
+
+.icono-item span {
+  text-align: center;
+}
+
+.icono-item button {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  border: none;
+  background: var(--azul-claro);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.icono-item button:hover {
+  transform: scale(1.1);
+}
+
+.icono-item button.activo {
+  background: var(--gris-claro);
+}
+
+.btn-confirmar {
+  background: var(--azul-claro);
+  color: var(--white);
+}
+
+.btn-cancelar {
+  background: var(--white);
+  color: var(--negro);
+}

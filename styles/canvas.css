@@ -1,0 +1,26 @@
+/*  SECTION 1: Canvas  */
+.canvas-box {
+  background-image: url("../src/bgpattern-b.webp");
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+#game {
+  width: 90%;
+  aspect-ratio: 2 / 1;
+  border-radius: 6px;
+  box-shadow: 0 15px 20px rgba(0, 0, 0, 0.25);
+}
+
+.canvas-box.oculto {
+  visibility: hidden;
+}
+
+@media (max-width: 405px) {
+  #game {
+    margin: 0;
+  }
+}
