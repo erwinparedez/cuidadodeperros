@@ -109,23 +109,23 @@ const ITEM_SIZE = 90;
 const configs = {
   easy: {
     time: 180,
-    target: 250,
+    target: 210,
     fallSpeed: 1.5,
-    spawnInterval: 1100,
+    spawnInterval: 1300,
   },
 
   normal: {
     time: 120,
-    target: 280,
+    target: 250,
     fallSpeed: 1.8,
-    spawnInterval: 850,
+    spawnInterval: 950,
   },
 
   hard: {
     time: 90,
     target: 300,
     fallSpeed: 2.5,
-    spawnInterval: 750,
+    spawnInterval: 850,
   },
 };
 
@@ -145,7 +145,7 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
-// Solo esquinas izquierdas redondeadas (imagen dentro de la tarjeta)
+// Esquinas izquierdas redondeadas (imagen dentro de la tarjeta)
 function roundRectLeft(ctx, x, y, w, h, r) {
   ctx.beginPath();
   ctx.moveTo(x + r, y);
