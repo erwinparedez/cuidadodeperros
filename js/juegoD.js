@@ -38,6 +38,7 @@ let paused = false;
 let circuitMode = false;
 let circuitCompleted = false;
 let currentLevelIndex = 0;
+let usedCardIndices = [];
 const circuitLevels = ["easy", "normal", "hard"];
 const circuitNames = ["Nivel 1", "Nivel 2", "Nivel 3"];
 
@@ -48,33 +49,33 @@ let currentCardData = null;
 const cardsData = [
   {
     img: "src/game-d/gamed-t1.webp",
-    subtitle: "Descanso Post Juego",
-    text: "Después de correr o jugar, también necesita descansar.",
+    subtitle: "Hora De Descansar",
+    text: "Después de jugar, tu perro necesita descansar.",
   },
   {
     img: "src/game-d/gamed-t2.webp",
-    subtitle: "Hidratación",
-    text: "Después de correr o pasear, puede tomar agua con calma.",
+    subtitle: "Tomar Agua",
+    text: "Después de correr, tu perro querrá tomar agua.",
   },
   {
     img: "src/game-d/gamed-t6.webp",
-    subtitle: "Evitar Encierros Largos",
-    text: "Estar mucho tiempo sin moverse puede hacerlo sentir triste, incómodo o estresado.",
+    subtitle: "No Encerrado",
+    text: "Tu perro necesita moverse y jugar todos los días.",
   },
   {
     img: "src/game-d/gamed-t4.webp",
-    subtitle: "Juego Con Supervisión",
-    text: "Siempre se debe cuidar que el juego o el juguete sean seguros.",
+    subtitle: "Juego Seguro",
+    text: "Asegurate que los juguetes sean seguros para perros.",
   },
   {
     img: "src/game-d/gamed-t5.webp",
-    subtitle: "Paseo Con Correa",
-    text: "Caminar con correa ayuda a evitar accidentes.",
+    subtitle: "Con Correa",
+    text: "La correa ayuda a cuidar a tu perro durante los paseos.",
   },
   {
     img: "src/game-d/gamed-t3.webp",
     subtitle: "Paseos Diarios",
-    text: "Pasear con frecuencia ayuda al perro a tener un cuerpo sano y se sienta feliz.",
+    text: "Salir a pasear ayuda los ayuda a ser felices, pero siempre bajo supervisión.",
   },
 ];
 let cardImages = [];
@@ -96,6 +97,7 @@ let restartBtn, diffBtn;
 // Datos de items por nivel
 const levelItems = {
   easy: [
+    //15 objetos disponibles
     { name: "Gnomo verde", x: 742, y: 250, r: 24 },
     { name: "Regalo", x: 735, y: 290, r: 24 },
     { name: "Cámara de fotos", x: 590, y: 263, r: 24 },
@@ -113,6 +115,7 @@ const levelItems = {
     { name: "Gafas de sol", x: 673, y: 268, r: 24 },
   ],
   normal: [
+    //17 objetos disponibles
     { name: "Mochila verde", x: 170, y: 452, r: 24 },
     { name: "Hueso rojo", x: 627, y: 207, r: 24 },
     { name: "Hueso verde", x: 42, y: 180, r: 24 },
@@ -132,6 +135,7 @@ const levelItems = {
     { name: "Plato rojo", x: 653, y: 352, r: 24 },
   ],
   hard: [
+    //20 objetos disponibles
     { name: "Oso de peluche", x: 120, y: 105, r: 24 },
     { name: "Uvas", x: 43, y: 91, r: 24 },
     { name: "Gorra roja", x: 94, y: 213, r: 24 },
@@ -377,6 +381,7 @@ export function init() {
       ) {
         circuitMode = true;
         currentLevelIndex = 0;
+        usedCardIndices = [];
         showLevelIntro();
       }
     }
@@ -506,7 +511,12 @@ export function init() {
 }
 
 function showLevelIntro() {
-  const idx = Math.floor(Math.random() * cardsData.length);
+  const available = cardsData
+    .map((_, i) => i)
+    .filter((i) => !usedCardIndices.includes(i));
+  const pool = available.length > 0 ? available : cardsData.map((_, i) => i);
+  const idx = pool[Math.floor(Math.random() * pool.length)];
+  usedCardIndices.push(idx);
   currentCardData = { ...cardsData[idx], imgObj: cardImages[idx] };
   state = "levelIntro";
 }

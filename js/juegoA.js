@@ -43,6 +43,7 @@ let paused = false;
 let circuitMode = false;
 let circuitCompleted = false;
 let currentLevelIndex = 0;
+let usedCardIndices = [];
 const circuitLevels = ["easy", "normal", "hard"];
 const circuitNames = ["Nivel 1", "Nivel 2", "Nivel 3"];
 
@@ -53,33 +54,33 @@ let currentCardData = null;
 const cardsData = [
   {
     img: "src/game-a/gamea-t1.webp",
-    subtitle: "Agua Fresca",
-    text: "Asegúrate de que tu perro siempre tenga agua limpia y fresca para tomar.",
+    subtitle: "Agua Limpia",
+    text: "Asegurate que tu perro siempre tiene agua limpia para tomar.",
   },
   {
     img: "src/game-a/gamea-t2.webp",
-    subtitle: "Dulces No",
-    text: "Los chocolates y golosinas humanas pueden hacerle daño a un perro.",
+    subtitle: "No Chocolate",
+    text: "El chocolate puede enfermar mucho a los perros.",
   },
   {
     img: "src/game-a/gamea-t3.webp",
-    subtitle: "Croquetas Adecuadas",
-    text: "Las croquetas deben ser para perros y de acuerdo con su edad.",
+    subtitle: "Comida de Perro",
+    text: "Los perros deben comer comida especial para ellos.",
   },
   {
     img: "src/game-a/gamea-t4.webp",
-    subtitle: "Porciones Correctas",
-    text: "Comer de más también puede hacerle daño, por eso la cantidad importa.",
+    subtitle: "Cantidad Justa",
+    text: "Comer demasiado también puede hacerle daño a tu perro.",
   },
   {
     img: "src/game-a/gamea-t5.webp",
-    subtitle: "Con Supervisión",
-    text: "Antes de darle algo nuevo, un adulto debe revisarlo.",
+    subtitle: "Pregunta a un Adulto",
+    text: "Antes de darle algo nuevo, pide ayuda a un adulto.",
   },
   {
     img: "src/game-a/gamea-t6.webp",
-    subtitle: "No Comida Picante",
-    text: "Los condimentos fuertes pueden irritarle el estómago.",
+    subtitle: "No Picante",
+    text: "Evita darle a tu perro comidas picantes, pueden hacerle doler mucho el estómago.",
   },
 ];
 
@@ -106,9 +107,26 @@ let player;
 const ITEM_SIZE = 90;
 
 const configs = {
-  easy: { time: 180, target: 250, fallSpeed: 2.2 },
-  normal: { time: 60, target: 300, fallSpeed: 3.2 },
-  hard: { time: 60, target: 350, fallSpeed: 4.7 },
+  easy: {
+    time: 180,
+    target: 250,
+    fallSpeed: 1.5,
+    spawnInterval: 1100,
+  },
+
+  normal: {
+    time: 120,
+    target: 280,
+    fallSpeed: 1.8,
+    spawnInterval: 850,
+  },
+
+  hard: {
+    time: 90,
+    target: 300,
+    fallSpeed: 2.5,
+    spawnInterval: 750,
+  },
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -391,6 +409,7 @@ export function init() {
       ) {
         circuitMode = true;
         currentLevelIndex = 0;
+        usedCardIndices = [];
         showLevelIntro();
       }
     }
@@ -463,11 +482,6 @@ export function init() {
     }
   }, 1000);
 
-  // Spawn
-  intervalSpawn = setInterval(() => {
-    if (state === "playing" && !paused) spawnItem();
-  }, 700);
-
   // Loop
   function loop() {
     update();
@@ -478,7 +492,12 @@ export function init() {
 }
 
 function showLevelIntro() {
-  const idx = Math.floor(Math.random() * cardsData.length);
+  const available = cardsData
+    .map((_, i) => i)
+    .filter((i) => !usedCardIndices.includes(i));
+  const pool = available.length > 0 ? available : cardsData.map((_, i) => i);
+  const idx = pool[Math.floor(Math.random() * pool.length)];
+  usedCardIndices.push(idx);
   currentCardData = { ...cardsData[idx], imgObj: cardImages[idx] };
   state = "levelIntro";
 }
@@ -521,6 +540,16 @@ function spawnItem() {
   });
 }
 
+function startSpawnInterval() {
+  clearInterval(intervalSpawn);
+
+  intervalSpawn = setInterval(() => {
+    if (state === "playing" && !paused) {
+      spawnItem();
+    }
+  }, config.spawnInterval);
+}
+
 function resetGame() {
   items = [];
   score = 0;
@@ -529,6 +558,7 @@ function resetGame() {
   state = "playing";
   paused = false;
   endScreenTime = null;
+  startSpawnInterval();
   AudioManager.playMusic("src/game-a/bgmusic-a.mp3");
 }
 

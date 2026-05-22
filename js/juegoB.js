@@ -48,6 +48,7 @@ let currentBoardConfig = null;
 let circuitMode = false;
 let circuitCompleted = false;
 let currentLevelIndex = 0;
+let usedCardIndices = [];
 const circuitLevels = ["easy", "normal", "hard"];
 const circuitNames = ["Nivel 1", "Nivel 2", "Nivel 3"];
 
@@ -59,32 +60,32 @@ const cardsData = [
   {
     img: "src/game-b/gameb-t1.webp",
     subtitle: "Baño Con Ayuda",
-    text: "Un adulto debe supervisar el baño del perro para hacerlo de forma segura.",
+    text: "Un adulto debe ayudarte a bañar al perro.",
   },
   {
     img: "src/game-b/gameb-t2.webp",
-    subtitle: "Temperatura Adecuada",
-    text: "El agua no debe estar ni muy caliente ni muy fría.",
+    subtitle: "Agua Tibia",
+    text: "El agua no debe estar muy fría ni muy caliente.",
   },
   {
     img: "src/game-b/gameb-t3.webp",
-    subtitle: "Toalla Propia",
-    text: "Es mejor usar una sola toalla que sea para el perro.",
+    subtitle: "Su Toalla",
+    text: "El perro debe tener una toalla solo para él.",
   },
   {
     img: "src/game-b/gameb-t4.webp",
     subtitle: "Cuidado Con El Jabón",
-    text: "Hay que evitar que el jabón entre en sus ojos, orejas, nariz o boca.",
+    text: "El jabón no debe entrar en sus ojos ni boca.",
   },
   {
     img: "src/game-b/gameb-t5.webp",
-    subtitle: "Secado Importante",
-    text: "Después del baño, el perro debe secarse bien.",
+    subtitle: "Secarlo Bien",
+    text: "Después del baño, el perro debe quedar seco.",
   },
   {
     img: "src/game-b/gameb-t6.webp",
-    subtitle: "Hora Tranquila",
-    text: "Bañar al perro con calma ayuda a que no se asuste.",
+    subtitle: "Con Calma",
+    text: "Bañarlo con calma ayuda a que no tenga miedo.",
   },
 ];
 let cardImages = [];
@@ -111,7 +112,7 @@ const gridY = 70;
 const configs = {
   easy: { time: 300, board: { size: 3, cell: 120, gap: 6 } },
   normal: { time: 180, board: { size: 4, cell: 86, gap: 5 } },
-  hard: { time: 120, board: { size: 5, cell: 66, gap: 4 } },
+  hard: { time: 180, board: { size: 5, cell: 66, gap: 4 } },
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -433,6 +434,7 @@ export function init() {
       ) {
         circuitMode = true;
         currentLevelIndex = 0;
+        usedCardIndices = [];
         showLevelIntro();
       }
     }
@@ -582,7 +584,12 @@ export function init() {
 }
 
 function showLevelIntro() {
-  const idx = Math.floor(Math.random() * cardsData.length);
+  const available = cardsData
+    .map((_, i) => i)
+    .filter((i) => !usedCardIndices.includes(i));
+  const pool = available.length > 0 ? available : cardsData.map((_, i) => i);
+  const idx = pool[Math.floor(Math.random() * pool.length)];
+  usedCardIndices.push(idx);
   currentCardData = { ...cardsData[idx], imgObj: cardImages[idx] };
   state = "levelIntro";
 }
@@ -830,6 +837,19 @@ function drawUI() {
   let s = time % 60;
   if (s < 10) s = "0" + s;
   ctx.fillText(`${m}:${s}`, (BASE_W - 120) * scale, 50 * scale);
+  const stageLabels = [
+    "Etapa 1: Mojado",
+    "Etapa 2: Shampoo y enjuague",
+    "Etapa 3: Secado y cepillado",
+  ];
+  const { size, cell, gap } = currentBoardConfig;
+  const boardBottom = gridY + size * (cell + gap) - gap + 22;
+  const boardCenterX = gridX + (size * (cell + gap) - gap) / 2;
+
+  ctx.fillStyle = "black";
+  ctx.font = `bold ${22 * scale}px sans-serif`;
+  ctx.textAlign = "left";
+  ctx.fillText(stageLabels[currentLevelIndex], 50 * scale, 483 * scale);
 }
 
 function drawCharacters() {

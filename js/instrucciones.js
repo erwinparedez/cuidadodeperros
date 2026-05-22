@@ -31,7 +31,7 @@ const instruccionesData = {
       imgA: "../src/chars-03.png",
       imgB: "../src/game-a/guide-c.gif",
       step: "Paso 3",
-      text: "Recolectar las croquetas con borde amarillo te harán recuperar vidas.",
+      text: "Recolectar las croquetas con borde amarillo te harán ganar vidas.",
     },
   ],
 
@@ -40,13 +40,13 @@ const instruccionesData = {
       imgA: "../src/chars-01.png",
       imgB: "../src/game-b/guide-a.gif",
       step: "Paso 1",
-      text: "Arrastra las piezas hacia el tablero para formar la imagen.",
+      text: "Arrastra las piezas hacia el tablero para armar la figura.",
     },
     {
       imgA: "../src/chars-03.png",
       imgB: "../src/game-b/guide-b.gif",
       step: "Paso 2",
-      text: "Ordena las piezas hasta formar la imagen completa.",
+      text: "Coloca las piezas en el lugar correcto hasta formar la figura completa.",
     },
     {
       imgA: "../src/chars-01.png",
@@ -67,13 +67,13 @@ const instruccionesData = {
       imgA: "../src/chars-02.png",
       imgB: "../src/game-c/guide-b.gif",
       step: "Paso 2",
-      text: "Si los enemigos llegan al collar perderás vidas.",
+      text: "Si los enemigos llegan al collar, perderás vidas.",
     },
     {
       imgA: "../src/chars-03.png",
       imgB: "../src/game-c/guide-c.gif",
       step: "Paso 3",
-      text: "Consigue los puntos necesarios antes de que  tus vidas se acaben.",
+      text: "Consigue todos los puntos necesarios antes de que tus vidas se acaben.",
     },
   ],
 
@@ -94,7 +94,7 @@ const instruccionesData = {
       imgA: "../src/chars-03.png",
       imgB: "../src/game-d/guide-c.gif",
       step: "Paso 3",
-      text: "Encuentra todos los objetos antes de que el tiempo termine.",
+      text: "Encuentra todos los objetos antes de que el tiempo se acabe.",
     },
   ],
 };

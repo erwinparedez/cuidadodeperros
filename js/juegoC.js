@@ -41,6 +41,7 @@ let paused = false;
 let circuitMode = false;
 let circuitCompleted = false;
 let currentLevelIndex = 0;
+let usedCardIndices = [];
 const circuitLevels = ["easy", "normal", "hard"];
 const circuitNames = ["Nivel 1", "Nivel 2", "Nivel 3"];
 
@@ -51,33 +52,33 @@ let currentCardData = null;
 const cardsData = [
   {
     img: "src/game-c/gamec-t1.webp",
-    subtitle: "Ojos Atentos",
-    text: "Si tu perro se rasca mucho, se muerde la piel o tiene muchas moscas alrededor, avisa a un adulto.",
+    subtitle: "Míralo Bien",
+    text: "Si tu perro se rasca mucho, avisa a un adulto.",
   },
   {
     img: "src/game-c/gamec-t2.webp",
     subtitle: "Lugar Limpio",
-    text: "Mantén limpio el espacio donde duerme tu perro para evitar parásitos y malos olores.",
+    text: "Mantén limpio el lugar donde duerme tu perro.",
   },
   {
     img: "src/game-c/gamec-t3.webp",
-    subtitle: "Vacunas Al Día",
-    text: "Las vacunas protegen a los perros de enfermedades peligrosas.",
+    subtitle: "Sus Vacunas",
+    text: "Las vacunas ayudan a que tu perro no se enferme.",
   },
   {
     img: "src/game-c/gamec-t4.webp",
     subtitle: "Juguetes Limpios",
-    text: "Lava los juguetes de tu perro para evitar suciedad y bacterias.",
+    text: "Lava sus juguetes para que estén limpios.",
   },
   {
     img: "src/game-c/gamec-t5.webp",
-    subtitle: "Cuidado Con La Basura",
-    text: "No permitas que tu perro revise bolsas de basura porque podría enfermarse.",
+    subtitle: "No Basura",
+    text: "Tu perro no debe comer cosas de la basura.",
   },
   {
     img: "src/game-c/gamec-t6.webp",
-    subtitle: "Collares Seguros",
-    text: "Algunos perros usan collares especiales para protegerse de pulgas y garrapatas.",
+    subtitle: "Collar Especial",
+    text: "Algunos collares ayudan a cuidar a los perros.",
   },
 ];
 let cardImages = [];
@@ -111,23 +112,23 @@ const spawnDefs = [
 const configs = {
   easy: {
     target: 300,
-    speed: 1.8,
-    spawnInterval: 650,
+    speed: 1.5,
+    spawnInterval: 1300,
     pRed: 0.8,
-    pBlue: 0.17,
-    pPurple: 0.03,
+    pBlue: 0.18,
+    pPurple: 0.02,
   },
   normal: {
     target: 600,
-    speed: 3.5,
-    spawnInterval: 750,
+    speed: 1.8,
+    spawnInterval: 850,
     pRed: 0.5,
     pBlue: 0.4,
     pPurple: 0.1,
   },
   hard: {
-    target: 1000,
-    speed: 4.2,
+    target: 900,
+    speed: 2.1,
     spawnInterval: 750,
     pRed: 0.34,
     pBlue: 0.33,
@@ -364,6 +365,7 @@ export function init() {
       ) {
         circuitMode = true;
         currentLevelIndex = 0;
+        usedCardIndices = [];
         showLevelIntro();
       }
     }
@@ -493,7 +495,12 @@ export function init() {
 }
 
 function showLevelIntro() {
-  const idx = Math.floor(Math.random() * cardsData.length);
+  const available = cardsData
+    .map((_, i) => i)
+    .filter((i) => !usedCardIndices.includes(i));
+  const pool = available.length > 0 ? available : cardsData.map((_, i) => i);
+  const idx = pool[Math.floor(Math.random() * pool.length)];
+  usedCardIndices.push(idx);
   currentCardData = { ...cardsData[idx], imgObj: cardImages[idx] };
   state = "levelIntro";
 }
