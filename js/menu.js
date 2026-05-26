@@ -215,9 +215,9 @@ function seleccionarCard(cardSeleccionada) {
     no-repeat
     right / cover`;
     miniaturaA.src = "../src/game-a/portada-cocina-a.webp";
-    miniaturaB.src = "../src/game-a/portada-bano-a.webp";
-    miniaturaC.src = "../src/game-a/portada-vet-a.webp";
-    miniaturaD.src = "../src/game-a/portada-parque-a.webp";
+    miniaturaB.src = "../src/game-b/portada-bano-a.webp";
+    miniaturaC.src = "../src/game-c/portada-vet-a.webp";
+    miniaturaD.src = "../src/game-d/portada-parque-a.webp";
     icon.src = Math.random() < 0.5 ? "./src/icon-a.webp" : "./src/icon-b.webp";
   }
 
@@ -226,10 +226,10 @@ function seleccionarCard(cardSeleccionada) {
     url("./src/portada-main-b.webp")
     no-repeat
     right / cover`;
-    miniaturaA.src = "../src/game-b/portada-cocina-b.webp";
+    miniaturaA.src = "../src/game-a/portada-cocina-b.webp";
     miniaturaB.src = "../src/game-b/portada-bano-b.webp";
-    miniaturaC.src = "../src/game-b/portada-vet-b.webp";
-    miniaturaD.src = "../src/game-b/portada-parque-b.webp";
+    miniaturaC.src = "../src/game-c/portada-vet-b.webp";
+    miniaturaD.src = "../src/game-d/portada-parque-b.webp";
     icon.src = Math.random() < 0.5 ? "./src/icon-c.webp" : "./src/icon-d.webp";
   }
 
@@ -238,10 +238,10 @@ function seleccionarCard(cardSeleccionada) {
     url("./src/portada-main-c.webp")
     no-repeat
     right / cover`;
-    miniaturaA.src = "../src/game-c/portada-cocina-c.webp";
-    miniaturaB.src = "../src/game-c/portada-bano-c.webp";
+    miniaturaA.src = "../src/game-a/portada-cocina-c.webp";
+    miniaturaB.src = "../src/game-b/portada-bano-c.webp";
     miniaturaC.src = "../src/game-c/portada-vet-c.webp";
-    miniaturaD.src = "../src/game-c/portada-parque-c.webp";
+    miniaturaD.src = "../src/game-d/portada-parque-c.webp";
     icon.src = Math.random() < 0.5 ? "./src/icon-e.webp" : "./src/icon-f.webp";
   }
 }
