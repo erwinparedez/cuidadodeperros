@@ -13,22 +13,28 @@ const cardBeforeBtn = document.getElementById("btn-anterior");
 const cardAfterBtn = document.getElementById("btn-siguiente");
 const cardEntendidoBtn = document.getElementById("btn-entendido");
 
+function getChar(step) {
+  const currentVariant = (window.customCardSeleccionada || "A").toUpperCase();
+
+  return `../src/chars-${currentVariant.toLowerCase()}${step}.png`;
+}
+
 const instruccionesData = {
   A: [
     {
-      imgA: "../src/chars-01.png",
+      charStep: "01",
       imgB: "../src/game-a/guide-a.gif",
       step: "Paso 1",
       text: "Mueve los personajes a la izquierda o a la derecha para atrapar la comida con borde verde.",
     },
     {
-      imgA: "../src/chars-02.png",
+      charStep: "02",
       imgB: "../src/game-a/guide-b.gif",
       step: "Paso 2",
       text: "No atrapes la comida con borde rojo, te harán perder vidas.",
     },
     {
-      imgA: "../src/chars-03.png",
+      charStep: "03",
       imgB: "../src/game-a/guide-c.gif",
       step: "Paso 3",
       text: "Recolectar las croquetas con borde amarillo te harán ganar vidas.",
@@ -37,19 +43,19 @@ const instruccionesData = {
 
   B: [
     {
-      imgA: "../src/chars-01.png",
+      charStep: "01",
       imgB: "../src/game-b/guide-a.gif",
       step: "Paso 1",
       text: "Arrastra las piezas hacia el tablero para armar la figura.",
     },
     {
-      imgA: "../src/chars-03.png",
+      charStep: "03",
       imgB: "../src/game-b/guide-b.gif",
       step: "Paso 2",
       text: "Coloca las piezas en el lugar correcto hasta formar la figura completa.",
     },
     {
-      imgA: "../src/chars-01.png",
+      charStep: "01",
       imgB: "../src/game-b/guide-c.gif",
       step: "Paso 3",
       text: "Completa el rompecabezas antes de que el tiempo se acabe.",
@@ -58,19 +64,19 @@ const instruccionesData = {
 
   C: [
     {
-      imgA: "../src/chars-01.png",
+      charStep: "01",
       imgB: "../src/game-c/guide-a.gif",
       step: "Paso 1",
       text: "Presiona sobre las pulgas y moscas para eliminarlas.",
     },
     {
-      imgA: "../src/chars-02.png",
+      charStep: "02",
       imgB: "../src/game-c/guide-b.gif",
       step: "Paso 2",
       text: "Si los enemigos llegan al collar, perderás vidas.",
     },
     {
-      imgA: "../src/chars-03.png",
+      charStep: "03",
       imgB: "../src/game-c/guide-c.gif",
       step: "Paso 3",
       text: "Consigue todos los puntos necesarios antes de que tus vidas se acaben.",
@@ -79,19 +85,19 @@ const instruccionesData = {
 
   D: [
     {
-      imgA: "../src/chars-01.png",
+      charStep: "01",
       imgB: "../src/game-d/guide-a.gif",
       step: "Paso 1",
       text: "Busca en el mapa todos los objetos que están en la lista.",
     },
     {
-      imgA: "../src/chars-03.png",
+      charStep: "03",
       imgB: "../src/game-d/guide-b.gif",
       step: "Paso 2",
       text: "Presiona sobre el objeto cuando los encuentres. (Por ejemplo: Calcetín)",
     },
     {
-      imgA: "../src/chars-03.png",
+      charStep: "01",
       imgB: "../src/game-d/guide-c.gif",
       step: "Paso 3",
       text: "Encuentra todos los objetos antes de que el tiempo se acabe.",
@@ -109,7 +115,7 @@ export function renderPaso() {
   const pasos = instruccionesData[juego];
   const paso = pasos[pasoActual];
 
-  cardImgA.src = paso.imgA;
+  cardImgA.src = getChar(paso.charStep);
   cardImgB.src = paso.imgB;
   stepCircle.textContent = (pasoActual + 1).toString().padStart(2, "0");
   cardText.textContent = paso.text;

@@ -25,6 +25,7 @@ let imgLifeItem;
 let imgGhostA, imgGhostB;
 let imgCover, imgCoverBtn;
 let imgPauseBtn, imgResumeBtn;
+let preloadedPairs = [];
 
 // Estado del juego
 let state;
@@ -63,22 +64,22 @@ const cardsData = [
   {
     img: "src/game-c/gamec-t3.webp",
     subtitle: "Sus Vacunas",
-    text: "Las vacunas ayudan a que tu perro no se enferme.",
+    text: "Las vacunas ayudan a proteger a tu perro de que se enferme. Lo mantienen sano y fuerte",
   },
   {
     img: "src/game-c/gamec-t4.webp",
     subtitle: "Juguetes Limpios",
-    text: "Lava sus juguetes para que estén limpios.",
+    text: "Es importante limpiar los juguetes de tu perro de vez en cuando.",
   },
   {
     img: "src/game-c/gamec-t5.webp",
     subtitle: "No Basura",
-    text: "Tu perro no debe comer cosas de la basura.",
+    text: "Tu perro no debe comer cosas de la basura porque podrían enfermarlo. Mantén la basura lejos para protegerlo.",
   },
   {
     img: "src/game-c/gamec-t6.webp",
     subtitle: "Collar Especial",
-    text: "Algunos collares ayudan a cuidar a los perros.",
+    text: "Ciertos collares ayudan a cuidar a tu perro y mantener alejados algunos bichos que le hacen daño.",
   },
 ];
 let cardImages = [];
@@ -101,7 +102,7 @@ let restartBtn, diffBtn;
 const ITEM_SIZE = 130;
 const LIFE_SIZE = 80;
 
-const columns = [200, 350, 500, 650, 800];
+const columns = [250, 375, 500, 625, 750];
 const spawnDefs = [
   { from: 0, to: 1 },
   { from: 2, to: 2 },
@@ -112,7 +113,7 @@ const spawnDefs = [
 const configs = {
   easy: {
     target: 300,
-    speed: 1.5,
+    speed: 1.6,
     spawnInterval: 1300,
     pRed: 0.8,
     pBlue: 0.18,
@@ -121,7 +122,7 @@ const configs = {
   normal: {
     target: 600,
     speed: 1.8,
-    spawnInterval: 850,
+    spawnInterval: 1000,
     pRed: 0.5,
     pBlue: 0.4,
     pPurple: 0.1,
@@ -129,7 +130,7 @@ const configs = {
   hard: {
     target: 900,
     speed: 2.1,
-    spawnInterval: 750,
+    spawnInterval: 900,
     pRed: 0.34,
     pBlue: 0.33,
     pPurple: 0.33,
@@ -184,17 +185,20 @@ function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
 export function init() {
   canvas = document.getElementById("game");
   ctx = canvas.getContext("2d");
+  const cardVariant = (window.customCardSeleccionada || "A").toUpperCase();
 
   // ── Imágenes ──────────────────────────────
 
   imgCover = new Image();
-  imgCover.src = "src/portada-vet.bmp";
+  const coverSrcs = {
+    A: "src/game-c/portada-vet-a.webp",
+    B: "src/game-c/portada-vet-b.webp",
+    C: "src/game-c/portada-vet-c.webp",
+  };
+  imgCover.src = coverSrcs[cardVariant] ?? coverSrcs["A"];
 
   imgCoverBtn = new Image();
   imgCoverBtn.src = "src/play-btn.png";
-
-  imgBackground = new Image();
-  imgBackground.src = "src/game-c/bg-c.webp";
 
   imgBtnEasy = new Image();
   imgBtnEasy.src = "src/btn-level-one.png";
@@ -204,17 +208,27 @@ export function init() {
   imgBtnHard.src = "src/btn-level-three.png";
 
   imgWin = new Image();
-  imgWin.src = "src/gamewin.webp";
+  const winSrcs = {
+    A: "src/gamewin-a.webp",
+    B: "src/gamewin-b.webp",
+    C: "src/gamewin-c.webp",
+  };
+  imgWin.src = winSrcs[cardVariant] ?? winSrcs["A"];
+
   imgLose = new Image();
-  imgLose.src = "src/gameover.webp";
+  const loseSrcs = {
+    A: "src/gameover-a.webp",
+    B: "src/gameover-b.webp",
+    C: "src/gameover-c.webp",
+  };
+  imgLose.src = loseSrcs[cardVariant] ?? loseSrcs["A"];
+
   imgBtnRestart = new Image();
   imgBtnRestart.src = "src/resetbtn.webp";
   imgBtnDiff = new Image();
   imgBtnDiff.src = "src/selectbtn.webp";
   imgLife = new Image();
   imgLife.src = "src/life.webp";
-  imgBarIcon = new Image();
-  imgBarIcon.src = "src/icon-b.webp";
 
   imgPauseBtn = new Image();
   imgPauseBtn.src = "src/btn-pause.png";
@@ -233,6 +247,34 @@ export function init() {
   imgGhostA.src = "src/game-c/defeat-a.webp";
   imgGhostB = new Image();
   imgGhostB.src = "src/game-c/defeat-b.webp";
+
+  const themePairs = {
+    A: [
+      { bg: "src/game-c/bg-a.webp", icon: "src/icon-a.webp" },
+      { bg: "src/game-c/bg-b.webp", icon: "src/icon-b.webp" },
+    ],
+    B: [
+      { bg: "src/game-c/bg-c.webp", icon: "src/icon-c.webp" },
+      { bg: "src/game-c/bg-d.webp", icon: "src/icon-d.webp" },
+    ],
+    C: [
+      { bg: "src/game-c/bg-e.webp", icon: "src/icon-e.webp" },
+      { bg: "src/game-c/bg-f.webp", icon: "src/icon-f.webp" },
+    ],
+  };
+
+  const pairs = themePairs[cardVariant] ?? themePairs["A"];
+  preloadedPairs = pairs.map((p) => {
+    const bgImg = new Image();
+    bgImg.src = p.bg;
+    const iconImg = new Image();
+    iconImg.src = p.icon;
+    return { bgImg, iconImg };
+  });
+
+  // Asignación inicial (hasta que el primer nivel elija)
+  imgBackground = preloadedPairs[0].bgImg;
+  imgBarIcon = preloadedPairs[0].iconImg;
 
   cardImages = cardsData.map((card) => {
     const img = new Image();
@@ -502,6 +544,7 @@ function showLevelIntro() {
   const idx = pool[Math.floor(Math.random() * pool.length)];
   usedCardIndices.push(idx);
   currentCardData = { ...cardsData[idx], imgObj: cardImages[idx] };
+  pickLevelTheme();
   state = "levelIntro";
 }
 
@@ -598,6 +641,13 @@ function spawnLife() {
   });
 }
 
+function pickLevelTheme() {
+  const pair =
+    preloadedPairs[Math.floor(Math.random() * preloadedPairs.length)];
+  imgBackground = pair.bgImg;
+  imgBarIcon = pair.iconImg;
+}
+
 function resetGame() {
   items = [];
   ghosts = [];
@@ -606,6 +656,7 @@ function resetGame() {
   state = "playing";
   paused = false;
   endScreenTime = null;
+  if (!circuitMode) pickLevelTheme();
   AudioManager.playMusic("src/game-c/bgmusic-c.mp3");
 }
 

@@ -55,22 +55,22 @@ const cardsData = [
   {
     img: "src/game-a/gamea-t1.webp",
     subtitle: "Agua Limpia",
-    text: "Asegurate que tu perro siempre tiene agua limpia para tomar.",
+    text: "Asegurate que tu perro siempre tenga agua limpia para tomar.",
   },
   {
     img: "src/game-a/gamea-t2.webp",
     subtitle: "No Chocolate",
-    text: "El chocolate puede enfermar mucho a los perros.",
+    text: "Mantén el chocolate y los dulces lejos de tu perro, porque le hacen mucho daño.",
   },
   {
     img: "src/game-a/gamea-t3.webp",
-    subtitle: "Comida de Perro",
-    text: "Los perros deben comer comida especial para ellos.",
+    subtitle: "Comida para Perros",
+    text: "La mejor comida para un perro es la que está hecha para él.",
   },
   {
     img: "src/game-a/gamea-t4.webp",
-    subtitle: "Cantidad Justa",
-    text: "Comer demasiado también puede hacerle daño a tu perro.",
+    subtitle: "Una Cantidad Justa",
+    text: "Ni muy poca ni demasiada comida, comer demasiado también puede hacerle daño a tu perro.",
   },
   {
     img: "src/game-a/gamea-t5.webp",
@@ -80,7 +80,7 @@ const cardsData = [
   {
     img: "src/game-a/gamea-t6.webp",
     subtitle: "No Picante",
-    text: "Evita darle a tu perro comidas picantes, pueden hacerle doler mucho el estómago.",
+    text: "La comida picante no es buena para los perros, pueden hacerle doler mucho el estómago.",
   },
 ];
 
@@ -179,9 +179,15 @@ function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
 export function init() {
   canvas = document.getElementById("game");
   ctx = canvas.getContext("2d");
+  const cardVariant = (window.customCardSeleccionada || "A").toUpperCase();
 
   imgCover = new Image();
-  imgCover.src = "src/portada-cocina.bmp";
+  const coverSrcs = {
+    A: "src/game-a/portada-cocina-a.webp",
+    B: "src/game-a/portada-cocina-b.webp",
+    C: "src/game-a/portada-cocina-c.webp",
+  };
+  imgCover.src = coverSrcs[cardVariant] ?? coverSrcs["A"];
 
   imgCoverBtn = new Image();
   imgCoverBtn.src = "src/play-btn.png";
@@ -190,7 +196,12 @@ export function init() {
   imgBackground.src = "src/game-a/bg-uno-a.webp";
 
   imgPlayer = new Image();
-  imgPlayer.src = "src/game-a/dog.webp";
+  const dogSrcs = {
+    A: "src/game-a/dog.webp",
+    B: "src/game-a/dog-b.webp",
+    C: "src/game-a/dog-c.webp",
+  };
+  imgPlayer.src = dogSrcs[cardVariant] ?? dogSrcs["A"];
 
   imgBtnEasy = new Image();
   imgBtnEasy.src = "src/btn-level-one.png";
@@ -202,10 +213,20 @@ export function init() {
   imgBtnHard.src = "src/btn-level-three.png";
 
   imgWin = new Image();
-  imgWin.src = "src/gamewin.webp";
+  const winSrcs = {
+    A: "src/gamewin-a.webp",
+    B: "src/gamewin-b.webp",
+    C: "src/gamewin-c.webp",
+  };
+  imgWin.src = winSrcs[cardVariant] ?? winSrcs["A"];
 
   imgLose = new Image();
-  imgLose.src = "src/gameover.webp";
+  const loseSrcs = {
+    A: "src/gameover-a.webp",
+    B: "src/gameover-b.webp",
+    C: "src/gameover-c.webp",
+  };
+  imgLose.src = loseSrcs[cardVariant] ?? loseSrcs["A"];
 
   imgBtnRestart = new Image();
   imgBtnRestart.src = "src/resetbtn.webp";
@@ -217,7 +238,12 @@ export function init() {
   imgLife.src = "src/life.webp";
 
   imgBarIcon = new Image();
-  imgBarIcon.src = "src/icon.webp";
+  const iconSrcs = {
+    A: Math.random() < 0.5 ? "src/icon-a.webp" : "src/icon-b.webp",
+    B: Math.random() < 0.5 ? "src/icon-c.webp" : "src/icon-d.webp",
+    C: Math.random() < 0.5 ? "src/icon-e.webp" : "src/icon-f.webp",
+  };
+  imgBarIcon.src = iconSrcs[cardVariant] ?? iconSrcs["A"];
 
   imgPauseBtn = new Image();
   imgPauseBtn.src = "src/btn-pause.png";

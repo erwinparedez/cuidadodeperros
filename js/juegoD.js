@@ -50,32 +50,32 @@ const cardsData = [
   {
     img: "src/game-d/gamed-t1.webp",
     subtitle: "Hora De Descansar",
-    text: "Después de jugar, tu perro necesita descansar.",
+    text: "Después de jugar, tu perro necesita descansar para recuperar energía.",
   },
   {
     img: "src/game-d/gamed-t2.webp",
     subtitle: "Tomar Agua",
-    text: "Después de correr, tu perro querrá tomar agua.",
+    text: "Siempre ofrece agua a tu perro después de jugar. Beber agua ayuda a tu perro a refrescarse y recuperar fuerzas.",
   },
   {
     img: "src/game-d/gamed-t6.webp",
     subtitle: "No Encerrado",
-    text: "Tu perro necesita moverse y jugar todos los días.",
+    text: "Tu perro necesita moverse y jugar todos los días. Moverse y explorar ayuda a tu perro a estar saludable y contento.",
   },
   {
     img: "src/game-d/gamed-t4.webp",
     subtitle: "Juego Seguro",
-    text: "Asegurate que los juguetes sean seguros para perros.",
+    text: "Asegurate que los juguetes sean seguros y mantén fuera de su alcance cualquier cosa que pueda lastimarlos.",
   },
   {
     img: "src/game-d/gamed-t5.webp",
     subtitle: "Con Correa",
-    text: "La correa ayuda a cuidar a tu perro durante los paseos.",
+    text: "Siempre pasea a tu perro con correa para que esté protegido y no se pierda.",
   },
   {
     img: "src/game-d/gamed-t3.webp",
     subtitle: "Paseos Diarios",
-    text: "Salir a pasear ayuda los ayuda a ser felices, pero siempre bajo supervisión.",
+    text: "Salir a pasear los ayuda a ser felices, pero siempre bajo supervisión.",
   },
 ];
 let cardImages = [];
@@ -214,11 +214,17 @@ function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
 export function init() {
   canvas = document.getElementById("game");
   ctx = canvas.getContext("2d");
+  const cardVariant = (window.customCardSeleccionada || "A").toUpperCase();
 
   // ── Imágenes ──────────────────────────────
 
   imgCover = new Image();
-  imgCover.src = "src/portada-parque.bmp";
+  const coverSrcs = {
+    A: "src/game-d/portada-parque-a.webp",
+    B: "src/game-d/portada-parque-b.webp",
+    C: "src/game-d/portada-parque-c.webp",
+  };
+  imgCover.src = coverSrcs[cardVariant] ?? coverSrcs["A"];
 
   imgCoverBtn = new Image();
   imgCoverBtn.src = "src/play-btn.png";
@@ -248,15 +254,33 @@ export function init() {
   imgBtnHard.src = "src/btn-level-three.png";
 
   imgWin = new Image();
-  imgWin.src = "src/gamewin.webp";
+  const winSrcs = {
+    A: "src/gamewin-a.webp",
+    B: "src/gamewin-b.webp",
+    C: "src/gamewin-c.webp",
+  };
+  imgWin.src = winSrcs[cardVariant] ?? winSrcs["A"];
+
   imgLose = new Image();
-  imgLose.src = "src/gameover.webp";
+  const loseSrcs = {
+    A: "src/gameover-a.webp",
+    B: "src/gameover-b.webp",
+    C: "src/gameover-c.webp",
+  };
+  imgLose.src = loseSrcs[cardVariant] ?? loseSrcs["A"];
+
   imgBtnRestart = new Image();
   imgBtnRestart.src = "src/resetbtn.webp";
   imgBtnDiff = new Image();
   imgBtnDiff.src = "src/selectbtn.webp";
+
   imgBarIcon = new Image();
-  imgBarIcon.src = "src/icon.webp";
+  const iconSrcs = {
+    A: Math.random() < 0.5 ? "src/icon-a.webp" : "src/icon-b.webp",
+    B: Math.random() < 0.5 ? "src/icon-c.webp" : "src/icon-d.webp",
+    C: Math.random() < 0.5 ? "src/icon-e.webp" : "src/icon-f.webp",
+  };
+  imgBarIcon.src = iconSrcs[cardVariant] ?? iconSrcs["A"];
 
   cardImages = cardsData.map((card) => {
     const img = new Image();

@@ -177,3 +177,84 @@ document
     await cargarJuego("../js/juegoD.js");
     abrirJuegoConInstrucciones("D");
   });
+
+// SELECCIÓN DE TARJETAS - Personalización
+const cards = document.querySelectorAll(".customCard");
+const portada = document.getElementById("menu-juegos");
+const miniaturaA = document.getElementById("main-miniatura-a");
+const miniaturaB = document.getElementById("main-miniatura-b");
+const miniaturaC = document.getElementById("main-miniatura-c");
+const miniaturaD = document.getElementById("main-miniatura-d");
+const icon = document.getElementById("icon-custom");
+
+window.customCardSeleccionada = null;
+
+function seleccionarCard(cardSeleccionada) {
+  cards.forEach((card) => {
+    const img = card.querySelector(".customCard-img");
+
+    const defaultSrc = card.dataset.defaultSrc;
+    const selectedSrc = card.dataset.selectedSrc;
+
+    const isSelected = card === cardSeleccionada;
+
+    card.classList.toggle("selected", isSelected);
+
+    if (img) {
+      img.src = isSelected ? selectedSrc : defaultSrc;
+    }
+  });
+
+  // Guardar valor global
+  window.customCardSeleccionada = cardSeleccionada.dataset.value;
+
+  // Personalización - Avatares
+  if (window.customCardSeleccionada === "A") {
+    portada.style.background = `
+    url("./src/portada-main-a.webp")
+    no-repeat
+    right / cover`;
+    miniaturaA.src = "../src/game-a/portada-cocina-a.webp";
+    miniaturaB.src = "../src/game-a/portada-bano-a.webp";
+    miniaturaC.src = "../src/game-a/portada-vet-a.webp";
+    miniaturaD.src = "../src/game-a/portada-parque-a.webp";
+    icon.src = Math.random() < 0.5 ? "./src/icon-a.webp" : "./src/icon-b.webp";
+  }
+
+  if (window.customCardSeleccionada === "B") {
+    portada.style.background = `
+    url("./src/portada-main-b.webp")
+    no-repeat
+    right / cover`;
+    miniaturaA.src = "../src/game-b/portada-cocina-b.webp";
+    miniaturaB.src = "../src/game-b/portada-bano-b.webp";
+    miniaturaC.src = "../src/game-b/portada-vet-b.webp";
+    miniaturaD.src = "../src/game-b/portada-parque-b.webp";
+    icon.src = Math.random() < 0.5 ? "./src/icon-c.webp" : "./src/icon-d.webp";
+  }
+
+  if (window.customCardSeleccionada === "C") {
+    portada.style.background = `
+    url("./src/portada-main-c.webp")
+    no-repeat
+    right / cover`;
+    miniaturaA.src = "../src/game-c/portada-cocina-c.webp";
+    miniaturaB.src = "../src/game-c/portada-bano-c.webp";
+    miniaturaC.src = "../src/game-c/portada-vet-c.webp";
+    miniaturaD.src = "../src/game-c/portada-parque-c.webp";
+    icon.src = Math.random() < 0.5 ? "./src/icon-e.webp" : "./src/icon-f.webp";
+  }
+}
+
+cards.forEach((card) => {
+  card.addEventListener("click", () => {
+    seleccionarCard(card);
+  });
+});
+
+// Selección inicial por defecto
+const cardInicial = document.querySelector("#customCard-a");
+
+if (cardInicial) {
+  seleccionarCard(cardInicial);
+}

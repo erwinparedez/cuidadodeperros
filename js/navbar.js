@@ -22,3 +22,17 @@ btnNav2.addEventListener("click", () => {
   resetInstrucciones();
   secInstruc.classList.add("activo");
 });
+
+const btnAbrirModal = document.getElementById("btn-nav2b");
+const modal = document.getElementById("modal-config");
+const btnCerrarModal = document.getElementById("btn-confirmar-modal");
+
+// Abrir modal
+btnAbrirModal.addEventListener("click", () => {
+  modal.classList.remove("custom-oculto");
+});
+
+// Cerrar modal
+btnCerrarModal.addEventListener("click", () => {
+  modal.classList.add("custom-oculto");
+});

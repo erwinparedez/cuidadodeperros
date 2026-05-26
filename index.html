@@ -4,22 +4,25 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sitio Web</title>
+    <title>Mascotas Web</title>
+    <link rel="icon" type="image/webp" href="./src/icon-a.webp">
     <link rel="stylesheet" href="styles/index.css">
     <link rel="stylesheet" href="styles/navbar.css">
     <link rel="stylesheet" href="styles/canvas.css">
     <link rel="stylesheet" href="styles/instrucciones.css">
     <link rel="stylesheet" href="styles/configuraciones.css">
     <link rel="stylesheet" href="styles/menu.css">
+    <link rel="stylesheet" href="styles/custom.css">
 </head>
 
 <section class="pantalla-no-disponible">
-    <img src="./src/gameover.webp" alt="No disponible en móvil" class="img-no-disponible">
+    <img src="./src/gameover-a.webp" alt="No disponible en móvil" class="img-no-disponible">
     <h2 class="titulo-no-disponible">Lo sentimos</h2>
     <p class="texto-no-disponible">Solo disponible para computadoras</p>
 </section>
 
 <body>
+    <!-- BARRA DE NAVEGACIÓN -->
     <nav id="navbar-box">
         <div class="nav-menu icono-item">
             <button class="btn-nav" id="btn-nav1"><img src="./src/arrow-icon.webp" alt="icono"></button>
@@ -41,32 +44,67 @@
             </div>
         </div>
     </nav>
+    <!-- MODAL PERSONALIZACIÓN -->
+    <section class="modal-config custom-oculto" id="modal-config">
+        <div class="modal-contenido">
+            <div class="personalizacion-title">
+                <h2>Personalización</h2>
+                <p>Elige con qué perros deseas jugar.</p>
+            </div>
+            <div class="customCards">
 
+                <div class="customCard" id="customCard-a" data-value="A" data-default-src="./src/chars-a01.png"
+                    data-selected-src="./src/chars-a03.png">
+                    <img src="" alt="" class="customCard-img" id="customCard-a-img">
+                </div>
+
+                <div class="customCard" id="customCard-b" data-value="B" data-default-src="./src/chars-b01.png"
+                    data-selected-src="./src/chars-b03.png">
+                    <img src="" alt="" class="customCard-img" id="customCard-b-img">
+                </div>
+
+                <div class="customCard" id="customCard-c" data-value="C" data-default-src="./src/chars-c01.png"
+                    data-selected-src="./src/chars-c03.png">
+                    <img src="" alt="" class="customCard-img" id="customCard-c-img">
+                </div>
+
+            </div>
+            <div>
+                <button class="btn-entendido text-font" id="btn-confirmar-modal">CONFIRMAR</button>
+            </div>
+        </div>
+    </section>
     <main>
+        <!-- MENÚ PRINCIPAL -->
         <section class="menu-juegos activo" id="menu-juegos">
+            <button class="btn-nav2b" id="btn-nav2b">
+                <img src="./src/icon-a.webp" id="icon-custom" alt="icono">
+            </button>
             <div class="juegos-contenido">
                 <h2>MINIJUEGOS</h2>
                 <div class="juegos-grid">
                     <button class="juego-item">
-                        <img src="../src/miniatura-a.webp" alt="minijuego de alimentos">
+                        <img src="" id="main-miniatura-a" alt="minijuego de alimentos">
                     </button>
                     <button class="juego-item">
-                        <img src="../src/miniatura-b.webp" alt="minijuego de higiene">
+                        <img src="" id="main-miniatura-b" alt="minijuego de higiene">
                     </button>
                     <button class="juego-item">
-                        <img src="../src/miniatura-c.webp" alt="minijuego de enfermedades">
+                        <img src="" id="main-miniatura-c" alt="minijuego de enfermedades">
                     </button>
                     <button class="juego-item">
-                        <img src="../src/miniatura-d.webp" alt="minijuego de salud fisica y emocional">
+                        <img src="" id="main-miniatura-d" alt="minijuego de salud fisica y emocional">
                     </button>
                 </div>
             </div>
         </section>
 
+        <!-- CANVAS -->
         <section class="canvas-box oculto">
             <canvas id="game"></canvas>
         </section>
 
+        <!-- INSTRUCCIONES -->
         <section class="instrucciones" id="instrucciones-box">
             <div id="instrucciones-card">
                 <div class="instrucciones-title">
@@ -78,7 +116,7 @@
                     <img src="./src/game-c/bug01.webp" alt="Personajes" id="card-img-character">
 
                     <div id="card-info-leftside">
-                        <img src="./src/game-c/guide-b.webp" alt="Tutorial" id="card-img-tutorial">
+                        <img src="./src/music-icon.webp" alt="Tutorial" id="card-img-tutorial">
                         <div class="text-font" id="card-text">
                             <div id="card-step-box">
                                 <div id="step-circle">01</div>

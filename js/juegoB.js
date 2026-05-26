@@ -60,32 +60,32 @@ const cardsData = [
   {
     img: "src/game-b/gameb-t1.webp",
     subtitle: "Baño Con Ayuda",
-    text: "Un adulto debe ayudarte a bañar al perro.",
+    text: "Siempre pide ayuda a un adulto para bañar a tu perro.",
   },
   {
     img: "src/game-b/gameb-t2.webp",
     subtitle: "Agua Tibia",
-    text: "El agua no debe estar muy fría ni muy caliente.",
+    text: "El agua que tome no debe estar ni muy fría ni muy caliente.",
   },
   {
     img: "src/game-b/gameb-t3.webp",
     subtitle: "Su Toalla",
-    text: "El perro debe tener una toalla solo para él.",
+    text: "Tu perro debe tener una toalla limpia solo para él.",
   },
   {
     img: "src/game-b/gameb-t4.webp",
     subtitle: "Cuidado Con El Jabón",
-    text: "El jabón no debe entrar en sus ojos ni boca.",
+    text: "El jabón no debe entrar en sus ojos, boca, ni orejas. Lava a tu perro con cuidado para que el jabón no le haga daño.",
   },
   {
     img: "src/game-b/gameb-t5.webp",
     subtitle: "Secarlo Bien",
-    text: "Después del baño, el perro debe quedar seco.",
+    text: "Después del baño, el perro debe quedar seco. Secar bien a tu perro ayuda a que no tenga frío.",
   },
   {
     img: "src/game-b/gameb-t6.webp",
     subtitle: "Con Calma",
-    text: "Bañarlo con calma ayuda a que no tenga miedo.",
+    text: "Bañarlo con calma ayuda a que no tenga miedo. Si lo bañas con paciencia, tu perro tendrá menos miedo.",
   },
 ];
 let cardImages = [];
@@ -111,8 +111,8 @@ const gridY = 70;
 // Configuraciones: tiempo + tablero por dificultad
 const configs = {
   easy: { time: 300, board: { size: 3, cell: 120, gap: 6 } },
-  normal: { time: 180, board: { size: 4, cell: 86, gap: 5 } },
-  hard: { time: 180, board: { size: 5, cell: 66, gap: 4 } },
+  normal: { time: 240, board: { size: 4, cell: 86, gap: 5 } },
+  hard: { time: 240, board: { size: 5, cell: 66, gap: 4 } },
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -163,11 +163,16 @@ function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
 export function init() {
   canvas = document.getElementById("game");
   ctx = canvas.getContext("2d");
-
+  const cardVariant = (window.customCardSeleccionada || "A").toUpperCase();
   // ── Imágenes ──────────────────────────────
 
   imgCover = new Image();
-  imgCover.src = "src/portada-bano.bmp";
+  const coverSrcs = {
+    A: "src/game-b/portada-bano-a.webp",
+    B: "src/game-b/portada-bano-b.webp",
+    C: "src/game-b/portada-bano-c.webp",
+  };
+  imgCover.src = coverSrcs[cardVariant] ?? coverSrcs["A"];
 
   imgCoverBtn = new Image();
   imgCoverBtn.src = "src/play-btn.png";
@@ -179,7 +184,7 @@ export function init() {
   imgResumeBtn.src = "src/btn-play.png";
 
   imgBackground = new Image();
-  imgBackground.src = "src/game-b/bg-bb.webp";
+  imgBackground.src = "src/game-b/bg-bano.webp";
 
   imgBtnEasy = new Image();
   imgBtnEasy.src = "src/btn-level-one.png";
@@ -189,29 +194,81 @@ export function init() {
   imgBtnHard.src = "src/btn-level-three.png";
 
   imgWin = new Image();
-  imgWin.src = "src/gamewin.webp";
+  const winSrcs = {
+    A: "src/gamewin-a.webp",
+    B: "src/gamewin-b.webp",
+    C: "src/gamewin-c.webp",
+  };
+  imgWin.src = winSrcs[cardVariant] ?? winSrcs["A"];
+
   imgLose = new Image();
-  imgLose.src = "src/gameover.webp";
+  const loseSrcs = {
+    A: "src/gameover-a.webp",
+    B: "src/gameover-b.webp",
+    C: "src/gameover-c.webp",
+  };
+  imgLose.src = loseSrcs[cardVariant] ?? loseSrcs["A"];
+
   imgBtnRestart = new Image();
   imgBtnRestart.src = "src/resetbtn.webp";
   imgBtnDiff = new Image();
   imgBtnDiff.src = "src/selectbtn.webp";
+
   imgBarIcon = new Image();
-  imgBarIcon.src = "src/icon.webp";
+  const iconSrcs = {
+    A: Math.random() < 0.5 ? "src/icon-a.webp" : "src/icon-b.webp",
+    B: Math.random() < 0.5 ? "src/icon-c.webp" : "src/icon-d.webp",
+    C: Math.random() < 0.5 ? "src/icon-e.webp" : "src/icon-f.webp",
+  };
+  imgBarIcon.src = iconSrcs[cardVariant] ?? iconSrcs["A"];
 
   imgPuzzleEasy = new Image();
-  imgPuzzleEasy.src = "src/game-b/puzzle-a.webp";
+  const easyBoardSrcs = {
+    A: "src/game-b/puzzle-a01.webp",
+    B: "src/game-b/puzzle-b01.webp",
+    C: "src/game-b/puzzle-c01.webp",
+  };
+  imgPuzzleEasy.src = easyBoardSrcs[cardVariant] ?? easyBoardSrcs["A"];
+
   imgPuzzleNormal = new Image();
-  imgPuzzleNormal.src = "src/game-b/puzzle-b.webp";
+  const normalBoardSrcs = {
+    A: "src/game-b/puzzle-a02.webp",
+    B: "src/game-b/puzzle-b02.webp",
+    C: "src/game-b/puzzle-c02.webp",
+  };
+  imgPuzzleNormal.src = normalBoardSrcs[cardVariant] ?? normalBoardSrcs["A"];
+
   imgPuzzleHard = new Image();
-  imgPuzzleHard.src = "src/game-b/puzzle-c.webp";
+  const hardBoardSrcs = {
+    A: "src/game-b/puzzle-a03.webp",
+    B: "src/game-b/puzzle-b03.webp",
+    C: "src/game-b/puzzle-c03.webp",
+  };
+  imgPuzzleHard.src = hardBoardSrcs[cardVariant] ?? hardBoardSrcs["A"];
 
   imgBlockEasy = new Image();
-  imgBlockEasy.src = "src/game-b/characters-a.webp";
+  const easyBlockSrcs = {
+    A: "src/game-b/bath-chars-a01.webp",
+    B: "src/game-b/bath-chars-b01.webp",
+    C: "src/game-b/bath-chars-c01.webp",
+  };
+  imgBlockEasy.src = easyBlockSrcs[cardVariant] ?? easyBlockSrcs["A"];
+
   imgBlockNormal = new Image();
-  imgBlockNormal.src = "src/game-b/characters-b.webp";
+  const normalBlockSrcs = {
+    A: "src/game-b/bath-chars-a02.webp",
+    B: "src/game-b/bath-chars-b02.webp",
+    C: "src/game-b/bath-chars-c02.webp",
+  };
+  imgBlockNormal.src = normalBlockSrcs[cardVariant] ?? normalBlockSrcs["A"];
+
   imgBlockHard = new Image();
-  imgBlockHard.src = "src/game-b/characters-c.webp";
+  const hardBlockSrcs = {
+    A: "src/game-b/bath-chars-a03.webp",
+    B: "src/game-b/bath-chars-b03.webp",
+    C: "src/game-b/bath-chars-c03.webp",
+  };
+  imgBlockHard.src = hardBlockSrcs[cardVariant] ?? hardBlockSrcs["A"];
 
   cardImages = cardsData.map((card) => {
     const img = new Image();
