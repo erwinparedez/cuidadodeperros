@@ -1,6 +1,6 @@
 /*  SECTION 1: Canvas  */
 .canvas-box {
-  background-image: url("./src/bgpattern-b.webp");
+  background-image: url("../src/bgpattern-b.webp");
   display: flex;
   justify-content: center;
   align-items: center;

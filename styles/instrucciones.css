@@ -5,7 +5,7 @@
   inset: 0;
   overflow-y: auto;
   z-index: 50;
-  background-image: url("./src/bgpattern-b.webp");
+  background-image: url("../src/bgpattern-b.webp");
 }
 
 .instrucciones::before {

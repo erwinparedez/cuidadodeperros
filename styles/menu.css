@@ -28,7 +28,7 @@
   display: none;
   position: fixed;
   inset: 0;
-  background: url("./src/portada-main-a.webp");
+  background: url("../src/portada-main-a.webp");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: right;
@@ -115,7 +115,7 @@
 
 @media (max-width: 850px) {
   .menu-juegos {
-    background: url("./src/prototype.png");
+    background: url("../src/prototype.png");
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
