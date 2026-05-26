@@ -71,7 +71,7 @@ main {
     inset: 0;
     z-index: 9999;
 
-    background-image: url("../src/bgpattern-b.webp");
+    background-image: url("./src/bgpattern-b.webp");
     background-repeat: repeat;
     background-size: auto;
   }
