@@ -109,7 +109,7 @@ const ITEM_SIZE = 90;
 const configs = {
   easy: {
     time: 180,
-    target: 210,
+    target: 180,
     fallSpeed: 1.5,
     spawnInterval: 1300,
   },
@@ -190,10 +190,15 @@ export function init() {
   imgCover.src = coverSrcs[cardVariant] ?? coverSrcs["A"];
 
   imgCoverBtn = new Image();
-  imgCoverBtn.src = "src/play-btn.png";
+  imgCoverBtn.src = "src/play-btn.webp";
 
   imgBackground = new Image();
-  imgBackground.src = "src/game-a/bg-uno-a.webp";
+  const bgSrcs = {
+    A: "src/game-a/bg-uno-a.webp",
+    B: "src/game-a/bg-uno-b.webp",
+    C: "src/game-a/bg-uno-c.webp",
+  };
+  imgBackground.src = bgSrcs[cardVariant] ?? bgSrcs["A"];
 
   imgPlayer = new Image();
   const dogSrcs = {
@@ -204,13 +209,13 @@ export function init() {
   imgPlayer.src = dogSrcs[cardVariant] ?? dogSrcs["A"];
 
   imgBtnEasy = new Image();
-  imgBtnEasy.src = "src/btn-level-one.png";
+  imgBtnEasy.src = "src/btn-level-one.webp";
 
   imgBtnNormal = new Image();
-  imgBtnNormal.src = "src/btn-level-two.png";
+  imgBtnNormal.src = "src/btn-level-two.webp";
 
   imgBtnHard = new Image();
-  imgBtnHard.src = "src/btn-level-three.png";
+  imgBtnHard.src = "src/btn-level-three.webp";
 
   imgWin = new Image();
   const winSrcs = {
@@ -246,10 +251,10 @@ export function init() {
   imgBarIcon.src = iconSrcs[cardVariant] ?? iconSrcs["A"];
 
   imgPauseBtn = new Image();
-  imgPauseBtn.src = "src/btn-pause.png";
+  imgPauseBtn.src = "src/btn-pause.webp";
 
   imgResumeBtn = new Image();
-  imgResumeBtn.src = "src/btn-play.png";
+  imgResumeBtn.src = "src/btn-play.webp";
 
   imgGood = [
     (() => {
@@ -270,6 +275,41 @@ export function init() {
     (() => {
       const i = new Image();
       i.src = "src/game-a/goodfood-d.webp";
+      return i;
+    })(),
+    (() => {
+      const i = new Image();
+      i.src = "src/game-a/goodfood-e.webp";
+      return i;
+    })(),
+    (() => {
+      const i = new Image();
+      i.src = "src/game-a/goodfood-f.webp";
+      return i;
+    })(),
+    (() => {
+      const i = new Image();
+      i.src = "src/game-a/goodfood-g.webp";
+      return i;
+    })(),
+    (() => {
+      const i = new Image();
+      i.src = "src/game-a/goodfood-h.webp";
+      return i;
+    })(),
+    (() => {
+      const i = new Image();
+      i.src = "src/game-a/goodfood-i.webp";
+      return i;
+    })(),
+    (() => {
+      const i = new Image();
+      i.src = "src/game-a/goodfood-j.webp";
+      return i;
+    })(),
+    (() => {
+      const i = new Image();
+      i.src = "src/game-a/goodfood-k.webp";
       return i;
     })(),
   ];
@@ -293,6 +333,41 @@ export function init() {
     (() => {
       const i = new Image();
       i.src = "src/game-a/badfood-d.webp";
+      return i;
+    })(),
+    (() => {
+      const i = new Image();
+      i.src = "src/game-a/badfood-e.webp";
+      return i;
+    })(),
+    (() => {
+      const i = new Image();
+      i.src = "src/game-a/badfood-f.webp";
+      return i;
+    })(),
+    (() => {
+      const i = new Image();
+      i.src = "src/game-a/badfood-g.webp";
+      return i;
+    })(),
+    (() => {
+      const i = new Image();
+      i.src = "src/game-a/badfood-h.webp";
+      return i;
+    })(),
+    (() => {
+      const i = new Image();
+      i.src = "src/game-a/badfood-i.webp";
+      return i;
+    })(),
+    (() => {
+      const i = new Image();
+      i.src = "src/game-a/badfood-j.webp";
+      return i;
+    })(),
+    (() => {
+      const i = new Image();
+      i.src = "src/game-a/badfood-k.webp";
       return i;
     })(),
   ];

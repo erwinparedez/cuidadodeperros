@@ -115,7 +115,7 @@
 
 @media (max-width: 850px) {
   .menu-juegos {
-    background: url("../src/prototype.png");
+    background: url("../src/prototype.webp");
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;

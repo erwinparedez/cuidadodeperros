@@ -227,13 +227,13 @@ export function init() {
   imgCover.src = coverSrcs[cardVariant] ?? coverSrcs["A"];
 
   imgCoverBtn = new Image();
-  imgCoverBtn.src = "src/play-btn.png";
+  imgCoverBtn.src = "src/play-btn.webp";
 
   imgPauseBtn = new Image();
-  imgPauseBtn.src = "src/btn-pause.png";
+  imgPauseBtn.src = "src/btn-pause.webp";
 
   imgResumeBtn = new Image();
-  imgResumeBtn.src = "src/btn-play.png";
+  imgResumeBtn.src = "src/btn-play.webp";
 
   imgBgEasy = new Image();
   imgBgEasy.src = "src/game-d/game-da.webp";
@@ -247,11 +247,11 @@ export function init() {
   imgPanelBg.src = "src/game-d/panel-bg.webp";
 
   imgBtnEasy = new Image();
-  imgBtnEasy.src = "src/btn-level-one.png";
+  imgBtnEasy.src = "src/btn-level-one.webp";
   imgBtnNormal = new Image();
-  imgBtnNormal.src = "src/btn-level-two.png";
+  imgBtnNormal.src = "src/btn-level-two.webp";
   imgBtnHard = new Image();
-  imgBtnHard.src = "src/btn-level-three.png";
+  imgBtnHard.src = "src/btn-level-three.webp";
 
   imgWin = new Image();
   const winSrcs = {
