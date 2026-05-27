@@ -31,13 +31,13 @@ const instruccionesData = {
       charStep: "02",
       imgB: "./src/game-a/videoguide-a02.webm",
       step: "Paso 2",
-      text: "No atrapes la comida con borde rojo, te harán perder vidas.",
+      text: "Evita la comida con borde rojo, te harán perder vidas.",
     },
     {
       charStep: "03",
       imgB: "./src/game-a/videoguide-a03.webm",
       step: "Paso 3",
-      text: "Recolectar las croquetas con borde amarillo te harán ganar vidas.",
+      text: "Recolectar las croquetas con borde amarillo te harán recuperar vidas.",
     },
   ],
 
@@ -94,7 +94,7 @@ const instruccionesData = {
       charStep: "03",
       imgB: "./src/game-d/videoguide-d02.webm",
       step: "Paso 2",
-      text: "Presiona sobre el objeto cuando los encuentres. (Por ejemplo: Calcetín)",
+      text: "Presiona sobre el objeto cuando lo encuentres. (Por ejemplo: Calcetín)",
     },
     {
       charStep: "01",

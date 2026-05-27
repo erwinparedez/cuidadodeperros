@@ -162,8 +162,8 @@ const levelItems = {
 // Configuraciones
 const configs = {
   easy: { time: 180, count: 5 },
-  normal: { time: 120, count: 7 },
-  hard: { time: 120, count: 10 },
+  normal: { time: 150, count: 7 },
+  hard: { time: 150, count: 10 },
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
