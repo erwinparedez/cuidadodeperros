@@ -307,11 +307,6 @@ export function init() {
       i.src = "src/game-a/goodfood-j.webp";
       return i;
     })(),
-    (() => {
-      const i = new Image();
-      i.src = "src/game-a/goodfood-k.webp";
-      return i;
-    })(),
   ];
 
   imgBad = [
@@ -363,11 +358,6 @@ export function init() {
     (() => {
       const i = new Image();
       i.src = "src/game-a/badfood-j.webp";
-      return i;
-    })(),
-    (() => {
-      const i = new Image();
-      i.src = "src/game-a/badfood-k.webp";
       return i;
     })(),
   ];
