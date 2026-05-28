@@ -46,6 +46,11 @@ let currentLevelIndex = 0;
 let usedCardIndices = [];
 const circuitLevels = ["easy", "normal", "hard"];
 const circuitNames = ["Nivel 1", "Nivel 2", "Nivel 3"];
+const circuitLevelItems = {
+  0: [0, 1, 2, 3, 4], // Nivel 1: a–e
+  1: [5, 6, 7, 8, 9], // Nivel 2: f–j
+  2: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], // Nivel 3: a–j
+};
 
 // Level intro
 let currentCardData = null;
@@ -610,15 +615,21 @@ function spawnItem() {
   const rand = Math.random();
   let color, imgRef;
 
+  const allowed = circuitMode
+    ? circuitLevelItems[currentLevelIndex]
+    : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+  const pick = allowed[Math.floor(Math.random() * allowed.length)];
+
   if (rand < 0.03 && lives < 3) {
     color = "yellow";
     imgRef = imgBonus;
   } else if (rand < 0.5) {
     color = "green";
-    imgRef = imgGood[Math.floor(Math.random() * imgGood.length)];
+    imgRef = imgGood[pick];
   } else {
     color = "red";
-    imgRef = imgBad[Math.floor(Math.random() * imgBad.length)];
+    imgRef = imgBad[pick];
   }
 
   items.push({
