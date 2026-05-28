@@ -2,8 +2,8 @@
 let musicEnabled = true;
 let sfxEnabled = true;
 
-const MUSIC_VOLUME = 0.03;
-const SFX_LOOP_VOLUME = 0.02;
+const MUSIC_VOLUME = 0.3;
+const SFX_LOOP_VOLUME = 0.2;
 
 let currentMusic = null;
 let currentSFXLoop = null;
@@ -46,7 +46,7 @@ export function stopMusic() {
   }
 }
 
-export function playSFX(src, volume = 0.02) {
+export function playSFX(src, volume = 0.2) {
   if (!sfxEnabled) return;
   const sfx = new Audio(src);
   sfx.volume = volume;

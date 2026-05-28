@@ -13,6 +13,8 @@ let mouseMoveHandler1;
 let mouseMoveHandler2;
 let mouseLeaveHandler;
 let clickHandler;
+let keyDownHandler;
+let keyUpHandler;
 let intervalTime;
 let intervalSpawn;
 let animationId;
@@ -38,6 +40,11 @@ let lives;
 let time;
 let endScreenTime = null;
 let paused = false;
+
+// Teclas presionadas
+const keysPressed = {};
+const PLAYER_SPEED = 6;
+let cursorTimeout;
 
 // Circuit mode
 let circuitMode = false;
@@ -421,8 +428,18 @@ export function init() {
   };
   canvas.addEventListener("mousemove", mouseMoveHandler1);
 
-  // mousemove: hover
+  // mousemove: efecto hover
   mouseMoveHandler2 = (e) => {
+    canvas.style.cursor = "default";
+    clearTimeout(cursorTimeout);
+
+    // Ocultar cursor después de 3 segundos sin movimiento
+    cursorTimeout = setTimeout(() => {
+      if (state === "playing" && !paused) {
+        canvas.style.cursor = "none";
+      }
+    }, 3000);
+
     const rect = canvas.getBoundingClientRect();
     const x = (e.clientX - rect.left) / scale;
     const y = (e.clientY - rect.top) / scale;
@@ -464,7 +481,8 @@ export function init() {
       hoverPause = Math.hypot(x - pauseBtn.x, y - pauseBtn.y) < pauseBtn.r;
     }
 
-    canvas.style.cursor =
+    // Mostrar pointer en botones
+    if (
       hoverRestart ||
       hoverDiff ||
       hoverCoverBtn ||
@@ -473,8 +491,9 @@ export function init() {
       hoverNormal ||
       hoverHard ||
       hoverPause
-        ? "pointer"
-        : "default";
+    ) {
+      canvas.style.cursor = "pointer";
+    }
   };
   canvas.addEventListener("mousemove", mouseMoveHandler2);
 
@@ -482,6 +501,7 @@ export function init() {
     if (state === "playing") {
       paused = true;
     }
+    clearTimeout(cursorTimeout);
     hoverRestart = hoverDiff = false;
     hoverEasy = hoverNormal = hoverHard = false;
     hoverCoverBtn = hoverEntendido = false;
@@ -490,7 +510,21 @@ export function init() {
   };
   canvas.addEventListener("mouseleave", mouseLeaveHandler);
 
-  // click
+  keyDownHandler = (e) => {
+    if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+      e.preventDefault();
+      keysPressed[e.key] = true;
+    }
+  };
+  keyUpHandler = (e) => {
+    if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+      keysPressed[e.key] = false;
+    }
+  };
+  window.addEventListener("keydown", keyDownHandler);
+  window.addEventListener("keyup", keyUpHandler);
+
+  // clic
   clickHandler = (e) => {
     const rect = canvas.getBoundingClientRect();
     const x = (e.clientX - rect.left) / scale;
@@ -601,6 +635,8 @@ function showLevelIntro() {
 export function cleanup() {
   AudioManager.stopAll();
   window.removeEventListener("resize", resizeHandler);
+  window.removeEventListener("keydown", keyDownHandler);
+  window.removeEventListener("keyup", keyUpHandler);
   canvas.removeEventListener("mousemove", mouseMoveHandler1);
   canvas.removeEventListener("mousemove", mouseMoveHandler2);
   canvas.removeEventListener("mouseleave", mouseLeaveHandler);
@@ -676,6 +712,15 @@ function collide(a, b) {
 function update() {
   if (state !== "playing" || paused) return;
 
+  if (keysPressed["ArrowLeft"]) {
+    player.x -= PLAYER_SPEED;
+    if (player.x < 0) player.x = 0;
+  }
+  if (keysPressed["ArrowRight"]) {
+    player.x += PLAYER_SPEED;
+    if (player.x + player.w > BASE_W) player.x = BASE_W - player.w;
+  }
+
   items.forEach((item, i) => {
     item.y += item.speed;
 
@@ -716,12 +761,10 @@ function update() {
     setTimeout(() => {
       if (circuitMode) {
         if (currentLevelIndex < 2) {
-          // Avanza al siguiente nivel del circuito
           currentLevelIndex++;
           items = [];
           showLevelIntro();
         } else {
-          // Completó los 3 niveles
           state = "victory";
           endScreenTime = performance.now();
           circuitCompleted = true;
@@ -761,7 +804,7 @@ function draw() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
 
-  // Personaje
+  // Personaje jugable
   if (imgPlayer.complete && imgPlayer.naturalWidth > 0) {
     const pImgW = player.w + 180;
     const pImgH = pImgW * (imgPlayer.naturalHeight / imgPlayer.naturalWidth);
@@ -833,7 +876,7 @@ function drawCover() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
 
-  // rebote suave solo en portada
+  // Efecto de rebote del botón "Jugar", solo en portada
   const pulse = 1 + Math.sin(performance.now() / 180) * 0.04;
 
   const cx = coverBtn.x + coverBtn.w / 2;
@@ -927,7 +970,7 @@ function drawLevelIntro() {
   ctx.fill();
   ctx.shadowBlur = 0;
 
-  // Imagen izquierda
+  // Imagen izquierda de la tarjeta educativa
   if (
     currentCardData?.imgObj?.complete &&
     currentCardData.imgObj.naturalWidth > 0
@@ -966,12 +1009,9 @@ function drawLevelIntro() {
   }
 
   if (currentCardData) {
-    // Subtítulo
     ctx.fillStyle = "#091C53";
     ctx.font = `bold ${22 * scale}px sans-serif`;
     ctx.fillText(currentCardData.subtitle, rightX * scale, rightY * scale);
-
-    // Texto con salto de línea automático
     ctx.fillStyle = "#111111";
     ctx.font = `${17 * scale}px sans-serif`;
     wrapText(

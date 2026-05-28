@@ -25,7 +25,7 @@ const instruccionesData = {
       charStep: "01",
       imgB: "./src/game-a/videoguide-a01.webm",
       step: "Paso 1",
-      text: "Mueve los personajes a la izquierda o a la derecha para atrapar la comida con borde verde.",
+      text: "Mueve los personajes presionando Izquierda o Derecha en tu teclado, o muevelos con el mouse para atrapar la comida con borde verde.",
     },
     {
       charStep: "02",
