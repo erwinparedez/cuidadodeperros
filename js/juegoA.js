@@ -43,8 +43,7 @@ let paused = false;
 
 // Teclas presionadas
 const keysPressed = {};
-const PLAYER_SPEED = 6;
-let cursorTimeout;
+const PLAYER_SPEED = 5;
 
 // Circuit mode
 let circuitMode = false;
@@ -102,6 +101,7 @@ let cardImages = [];
 const coverBtn = { x: 750, y: 390, w: 210, h: 90 };
 const entendidoBtn = { x: 560, y: 310, w: 160, h: 42 };
 const pauseBtn = { x: 940, y: 420, r: 35 };
+const pauseDiffBtn = { x: 940, y: 300, r: 35 };
 
 // Hover
 let hoverRestart, hoverDiff;
@@ -109,6 +109,7 @@ let hoverEasy, hoverNormal, hoverHard;
 let hoverCoverBtn = false;
 let hoverEntendido = false;
 let hoverPause = false;
+let hoverPauseDiff = false;
 
 // Botones fin de partida
 let restartBtn, diffBtn;
@@ -428,18 +429,8 @@ export function init() {
   };
   canvas.addEventListener("mousemove", mouseMoveHandler1);
 
-  // mousemove: efecto hover
+  // mousemove: hover
   mouseMoveHandler2 = (e) => {
-    canvas.style.cursor = "default";
-    clearTimeout(cursorTimeout);
-
-    // Ocultar cursor después de 3 segundos sin movimiento
-    cursorTimeout = setTimeout(() => {
-      if (state === "playing" && !paused) {
-        canvas.style.cursor = "none";
-      }
-    }, 3000);
-
     const rect = canvas.getBoundingClientRect();
     const x = (e.clientX - rect.left) / scale;
     const y = (e.clientY - rect.top) / scale;
@@ -448,6 +439,7 @@ export function init() {
     hoverEasy = hoverNormal = hoverHard = false;
     hoverCoverBtn = hoverEntendido = false;
     hoverPause = false;
+    hoverPauseDiff = false;
 
     if (state === "cover") {
       hoverCoverBtn =
@@ -479,10 +471,13 @@ export function init() {
 
     if (state === "playing") {
       hoverPause = Math.hypot(x - pauseBtn.x, y - pauseBtn.y) < pauseBtn.r;
+      if (paused) {
+        hoverPauseDiff =
+          Math.hypot(x - pauseDiffBtn.x, y - pauseDiffBtn.y) < pauseDiffBtn.r;
+      }
     }
 
-    // Mostrar pointer en botones
-    if (
+    canvas.style.cursor =
       hoverRestart ||
       hoverDiff ||
       hoverCoverBtn ||
@@ -490,10 +485,10 @@ export function init() {
       hoverEasy ||
       hoverNormal ||
       hoverHard ||
-      hoverPause
-    ) {
-      canvas.style.cursor = "pointer";
-    }
+      hoverPause ||
+      hoverPauseDiff
+        ? "pointer"
+        : "default";
   };
   canvas.addEventListener("mousemove", mouseMoveHandler2);
 
@@ -501,15 +496,16 @@ export function init() {
     if (state === "playing") {
       paused = true;
     }
-    clearTimeout(cursorTimeout);
     hoverRestart = hoverDiff = false;
     hoverEasy = hoverNormal = hoverHard = false;
     hoverCoverBtn = hoverEntendido = false;
     hoverPause = false;
+    hoverPauseDiff = false;
     canvas.style.cursor = "default";
   };
   canvas.addEventListener("mouseleave", mouseLeaveHandler);
 
+  // teclado: registrar teclas presionadas
   keyDownHandler = (e) => {
     if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
       e.preventDefault();
@@ -524,7 +520,7 @@ export function init() {
   window.addEventListener("keydown", keyDownHandler);
   window.addEventListener("keyup", keyUpHandler);
 
-  // clic
+  // click
   clickHandler = (e) => {
     const rect = canvas.getBoundingClientRect();
     const x = (e.clientX - rect.left) / scale;
@@ -562,18 +558,23 @@ export function init() {
       if (x > 220 && x < 380 && y > 220 && y < 310) {
         config = configs.easy;
         dificultadActual = "Fácil";
+        currentLevelIndex = 0;
         circuitMode = false;
         resetGame();
       }
+
       if (x > 420 && x < 580 && y > 220 && y < 310) {
         config = configs.normal;
         dificultadActual = "Media";
+        currentLevelIndex = 1;
         circuitMode = false;
         resetGame();
       }
+
       if (x > 620 && x < 780 && y > 220 && y < 310) {
         config = configs.hard;
         dificultadActual = "Difícil";
+        currentLevelIndex = 2;
         circuitMode = false;
         resetGame();
       }
@@ -582,6 +583,20 @@ export function init() {
     if (state === "playing") {
       if (Math.hypot(x - pauseBtn.x, y - pauseBtn.y) < pauseBtn.r) {
         paused = !paused;
+        return;
+      }
+      if (
+        paused &&
+        Math.hypot(x - pauseDiffBtn.x, y - pauseDiffBtn.y) < pauseDiffBtn.r
+      ) {
+        clearInterval(intervalSpawn);
+        AudioManager.stopMusic();
+        items = [];
+        paused = false;
+        circuitMode = false;
+        keysPressed["ArrowLeft"] = false;
+        keysPressed["ArrowRight"] = false;
+        state = "difficulty";
         return;
       }
     }
@@ -804,7 +819,7 @@ function draw() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
 
-  // Personaje jugable
+  // Personaje
   if (imgPlayer.complete && imgPlayer.naturalWidth > 0) {
     const pImgW = player.w + 180;
     const pImgH = pImgW * (imgPlayer.naturalHeight / imgPlayer.naturalWidth);
@@ -876,7 +891,7 @@ function drawCover() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
 
-  // Efecto de rebote del botón "Jugar", solo en portada
+  // rebote suave solo en portada
   const pulse = 1 + Math.sin(performance.now() / 180) * 0.04;
 
   const cx = coverBtn.x + coverBtn.w / 2;
@@ -970,7 +985,7 @@ function drawLevelIntro() {
   ctx.fill();
   ctx.shadowBlur = 0;
 
-  // Imagen izquierda de la tarjeta educativa
+  // Imagen izquierda
   if (
     currentCardData?.imgObj?.complete &&
     currentCardData.imgObj.naturalWidth > 0
@@ -1009,9 +1024,12 @@ function drawLevelIntro() {
   }
 
   if (currentCardData) {
+    // Subtítulo
     ctx.fillStyle = "#091C53";
     ctx.font = `bold ${22 * scale}px sans-serif`;
     ctx.fillText(currentCardData.subtitle, rightX * scale, rightY * scale);
+
+    // Texto con salto de línea automático
     ctx.fillStyle = "#111111";
     ctx.font = `${17 * scale}px sans-serif`;
     wrapText(
@@ -1250,6 +1268,38 @@ function drawDiffButton(img, x, hover) {
 function drawPauseButton() {
   const { x, y, r } = pauseBtn;
 
+  if (paused) {
+    // Botón seleccionar dificultad (solo visible en pausa)
+    const { x: dx, y: dy, r: dr } = pauseDiffBtn;
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(dx * scale, dy * scale, dr * scale, 0, Math.PI * 2);
+    ctx.clip();
+    if (imgBtnDiff.complete && imgBtnDiff.naturalWidth > 0) {
+      ctx.drawImage(
+        imgBtnDiff,
+        (dx - dr) * scale,
+        (dy - dr) * scale,
+        dr * 2 * scale,
+        dr * 2 * scale,
+      );
+    } else {
+      ctx.fillStyle = hoverPauseDiff ? "#0a2875" : "#091C53";
+      ctx.fill();
+    }
+    ctx.restore();
+
+    ctx.globalAlpha = hoverPauseDiff ? 0.85 : 1;
+    ctx.fillStyle = "white";
+    ctx.font = `${18 * scale}px sans-serif`;
+    ctx.textAlign = "center";
+    ctx.fillText("Seleccionar", dx * scale, (dy + dr + 18) * scale);
+    ctx.fillText("dificultad", dx * scale, (dy + dr + 38) * scale);
+    ctx.globalAlpha = 1;
+    ctx.textAlign = "left";
+  }
+
+  // Botón pausa / reanudar
   ctx.save();
   ctx.beginPath();
   ctx.arc(x * scale, y * scale, r * scale, 0, Math.PI * 2);
