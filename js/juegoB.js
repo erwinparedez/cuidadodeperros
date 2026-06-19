@@ -20,7 +20,7 @@ let animationId;
 // Imágenes
 let imgBackground;
 let imgBtnEasy, imgBtnNormal, imgBtnHard;
-let imgWin, imgLose, imgBtnRestart, imgBtnDiff, imgBarIcon;
+let imgWin, imgLose, imgBtnRestart, imgBtnDiff, imgBtnDiffPause, imgBarIcon;
 let imgPuzzleEasy, imgPuzzleNormal, imgPuzzleHard;
 let imgBlockEasy, imgBlockNormal, imgBlockHard;
 let imgCover, imgCoverBtn;
@@ -112,9 +112,9 @@ const gridY = 70;
 
 // Configuraciones: tiempo + tablero por dificultad
 const configs = {
-  easy: { time: 300, board: { size: 3, cell: 120, gap: 6 } },
+  easy: { time: 180, board: { size: 3, cell: 120, gap: 6 } },
   normal: { time: 240, board: { size: 4, cell: 86, gap: 5 } },
-  hard: { time: 240, board: { size: 5, cell: 66, gap: 4 } },
+  hard: { time: 300, board: { size: 5, cell: 66, gap: 4 } },
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -213,8 +213,12 @@ export function init() {
 
   imgBtnRestart = new Image();
   imgBtnRestart.src = "src/resetbtn.webp";
+
   imgBtnDiff = new Image();
   imgBtnDiff.src = "src/selectbtn.webp";
+
+  imgBtnDiffPause = new Image();
+  imgBtnDiffPause.src = "src/selectbtn-b.webp";
 
   imgBarIcon = new Image();
   const iconSrcs = {
@@ -524,7 +528,7 @@ export function init() {
         dificultadActual = "Fácil";
         currentLevelIndex = 0;
         circuitMode = false;
-        resetGame();
+        startGame();
       }
 
       if (x > 420 && x < 580 && y > 220 && y < 310) {
@@ -532,7 +536,7 @@ export function init() {
         dificultadActual = "Media";
         currentLevelIndex = 1;
         circuitMode = false;
-        resetGame();
+        startGame();
       }
 
       if (x > 620 && x < 780 && y > 220 && y < 310) {
@@ -540,7 +544,7 @@ export function init() {
         dificultadActual = "Difícil";
         currentLevelIndex = 2;
         circuitMode = false;
-        resetGame();
+        startGame();
       }
     }
 
@@ -1272,9 +1276,9 @@ function drawPauseButton() {
     ctx.beginPath();
     ctx.arc(dx * scale, dy * scale, dr * scale, 0, Math.PI * 2);
     ctx.clip();
-    if (imgBtnDiff.complete && imgBtnDiff.naturalWidth > 0) {
+    if (imgBtnDiffPause.complete && imgBtnDiffPause.naturalWidth > 0) {
       ctx.drawImage(
-        imgBtnDiff,
+        imgBtnDiffPause,
         (dx - dr) * scale,
         (dy - dr) * scale,
         dr * 2 * scale,

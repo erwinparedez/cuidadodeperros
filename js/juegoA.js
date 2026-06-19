@@ -19,10 +19,13 @@ let intervalTime;
 let intervalSpawn;
 let animationId;
 
+// Cursor auto-oculto
+let cursorTimeout = null;
+
 // Imágenes
 let imgBackground, imgPlayer;
 let imgBtnEasy, imgBtnNormal, imgBtnHard;
-let imgWin, imgLose, imgBtnRestart, imgBtnDiff;
+let imgWin, imgLose, imgBtnRestart, imgBtnDiff, imgBtnDiffPause;
 let imgLife, imgBarIcon;
 let imgGood, imgBad, imgBonus;
 let imgCover, imgCoverBtn;
@@ -187,6 +190,24 @@ function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
   ctx.fillText(line, x, y);
 }
 
+// ─── Cursor helpers ───────────────────────────────────────────────────────────
+
+function showCursor(isPointer = false) {
+  canvas.style.cursor = isPointer ? "pointer" : "default";
+  clearTimeout(cursorTimeout);
+  cursorTimeout = setTimeout(() => {
+    if (state === "playing") {
+      canvas.style.cursor = "none";
+    }
+  }, 3000);
+}
+
+function hideCursor() {
+  clearTimeout(cursorTimeout);
+  cursorTimeout = null;
+  canvas.style.cursor = "none";
+}
+
 // ─── init ─────────────────────────────────────────────────────────────────────
 
 export function init() {
@@ -251,6 +272,9 @@ export function init() {
 
   imgBtnDiff = new Image();
   imgBtnDiff.src = "src/selectbtn.webp";
+
+  imgBtnDiffPause = new Image();
+  imgBtnDiffPause.src = "src/selectbtn-b.webp";
 
   imgLife = new Image();
   imgLife.src = "src/life.webp";
@@ -429,7 +453,7 @@ export function init() {
   };
   canvas.addEventListener("mousemove", mouseMoveHandler1);
 
-  // mousemove: hover
+  // mousemove: hover + cursor auto-oculto
   mouseMoveHandler2 = (e) => {
     const rect = canvas.getBoundingClientRect();
     const x = (e.clientX - rect.left) / scale;
@@ -475,8 +499,13 @@ export function init() {
         hoverPauseDiff =
           Math.hypot(x - pauseDiffBtn.x, y - pauseDiffBtn.y) < pauseDiffBtn.r;
       }
+      // Mostrar cursor y reiniciar el temporizador de ocultado
+      const isPointer = hoverPause || hoverPauseDiff;
+      showCursor(isPointer);
+      return; // el cursor ya fue gestionado por showCursor, salimos
     }
 
+    // Fuera de "playing": cursor normal sin temporizador
     canvas.style.cursor =
       hoverRestart ||
       hoverDiff ||
@@ -495,13 +524,17 @@ export function init() {
   mouseLeaveHandler = () => {
     if (state === "playing") {
       paused = true;
+      hideCursor();
     }
     hoverRestart = hoverDiff = false;
     hoverEasy = hoverNormal = hoverHard = false;
     hoverCoverBtn = hoverEntendido = false;
     hoverPause = false;
     hoverPauseDiff = false;
-    canvas.style.cursor = "default";
+
+    if (state !== "playing") {
+      canvas.style.cursor = "default";
+    }
   };
   canvas.addEventListener("mouseleave", mouseLeaveHandler);
 
@@ -596,6 +629,10 @@ export function init() {
         circuitMode = false;
         keysPressed["ArrowLeft"] = false;
         keysPressed["ArrowRight"] = false;
+        // Restaurar cursor al salir de "playing"
+        clearTimeout(cursorTimeout);
+        cursorTimeout = null;
+        canvas.style.cursor = "default";
         state = "difficulty";
         return;
       }
@@ -621,6 +658,10 @@ export function init() {
         paused = false;
         state = "gameover";
         endScreenTime = performance.now();
+        // Restaurar cursor al salir de "playing"
+        clearTimeout(cursorTimeout);
+        cursorTimeout = null;
+        canvas.style.cursor = "default";
         AudioManager.stopMusic();
         AudioManager.playSFX("src/sounds/gameover.mp3");
       }
@@ -659,6 +700,9 @@ export function cleanup() {
   clearInterval(intervalTime);
   clearInterval(intervalSpawn);
   cancelAnimationFrame(animationId);
+  // Limpiar timeout del cursor y restaurarlo
+  clearTimeout(cursorTimeout);
+  cursorTimeout = null;
   canvas.style.cursor = "default";
 }
 
@@ -762,6 +806,10 @@ function update() {
     paused = false;
     state = "gameover";
     endScreenTime = performance.now();
+    // Restaurar cursor al salir de "playing"
+    clearTimeout(cursorTimeout);
+    cursorTimeout = null;
+    canvas.style.cursor = "default";
     AudioManager.stopMusic();
     AudioManager.playSFX("src/sounds/gameover.mp3");
   }
@@ -769,6 +817,11 @@ function update() {
   if (score >= config.target && state === "playing") {
     state = "finished";
     paused = false;
+
+    // Restaurar cursor al salir de "playing"
+    clearTimeout(cursorTimeout);
+    cursorTimeout = null;
+    canvas.style.cursor = "default";
 
     AudioManager.stopMusic();
     AudioManager.playSFX("src/sounds/victory.mp3");
@@ -1275,9 +1328,9 @@ function drawPauseButton() {
     ctx.beginPath();
     ctx.arc(dx * scale, dy * scale, dr * scale, 0, Math.PI * 2);
     ctx.clip();
-    if (imgBtnDiff.complete && imgBtnDiff.naturalWidth > 0) {
+    if (imgBtnDiffPause.complete && imgBtnDiffPause.naturalWidth > 0) {
       ctx.drawImage(
-        imgBtnDiff,
+        imgBtnDiffPause,
         (dx - dr) * scale,
         (dy - dr) * scale,
         dr * 2 * scale,

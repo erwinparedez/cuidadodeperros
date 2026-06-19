@@ -18,7 +18,7 @@ let animationId;
 let imgBgEasy, imgBgNormal, imgBgHard;
 let imgBackground, imgPanelBg;
 let imgBtnEasy, imgBtnNormal, imgBtnHard;
-let imgWin, imgLose, imgBtnRestart, imgBtnDiff;
+let imgWin, imgLose, imgBtnRestart, imgBtnDiff, imgBtnDiffPause;
 let imgBarIcon;
 let imgCover, imgCoverBtn;
 let imgPauseBtn, imgResumeBtn;
@@ -165,7 +165,7 @@ const levelItems = {
 const configs = {
   easy: { time: 180, count: 5 },
   normal: { time: 150, count: 7 },
-  hard: { time: 150, count: 10 },
+  hard: { time: 180, count: 10 },
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -273,8 +273,12 @@ export function init() {
 
   imgBtnRestart = new Image();
   imgBtnRestart.src = "src/resetbtn.webp";
+
   imgBtnDiff = new Image();
   imgBtnDiff.src = "src/selectbtn.webp";
+
+  imgBtnDiffPause = new Image();
+  imgBtnDiffPause.src = "src/selectbtn-b.webp";
 
   imgBarIcon = new Image();
   const iconSrcs = {
@@ -435,27 +439,33 @@ export function init() {
 
     if (state === "difficulty") {
       if (x > 220 && x < 380 && y > 220 && y < 310) {
+        configKey = "easy";
         config = configs.easy;
         dificultadActual = "Fácil";
         currentLevelIndex = 0;
         circuitMode = false;
         resetGame();
+        return;
       }
 
       if (x > 420 && x < 580 && y > 220 && y < 310) {
+        configKey = "normal";
         config = configs.normal;
         dificultadActual = "Media";
         currentLevelIndex = 1;
         circuitMode = false;
         resetGame();
+        return;
       }
 
       if (x > 620 && x < 780 && y > 220 && y < 310) {
+        configKey = "hard";
         config = configs.hard;
         dificultadActual = "Difícil";
         currentLevelIndex = 2;
         circuitMode = false;
         resetGame();
+        return;
       }
     }
 
@@ -1101,9 +1111,9 @@ function drawPauseButton() {
     ctx.beginPath();
     ctx.arc(dx * scale, dy * scale, dr * scale, 0, Math.PI * 2);
     ctx.clip();
-    if (imgBtnDiff.complete && imgBtnDiff.naturalWidth > 0) {
+    if (imgBtnDiffPause.complete && imgBtnDiffPause.naturalWidth > 0) {
       ctx.drawImage(
-        imgBtnDiff,
+        imgBtnDiffPause,
         (dx - dr) * scale,
         (dy - dr) * scale,
         dr * 2 * scale,

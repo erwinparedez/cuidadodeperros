@@ -54,6 +54,12 @@ main {
   font-size: 1.1rem;
 }
 
+img {
+  -webkit-user-drag: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
 /* ── Pantalla de bloqueo para móviles muy pequeños ── */
 .pantalla-no-disponible {
   display: none;

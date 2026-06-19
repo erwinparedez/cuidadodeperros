@@ -18,7 +18,7 @@ let spawnTimeout;
 // Imágenes
 let imgBackground;
 let imgBtnEasy, imgBtnNormal, imgBtnHard;
-let imgWin, imgLose, imgBtnRestart, imgBtnDiff;
+let imgWin, imgLose, imgBtnRestart, imgBtnDiff, imgBtnDiffPause;
 let imgLife, imgBarIcon;
 let imgEnemy, imgEnemyBlue, imgEnemyPurple;
 let imgLifeItem;
@@ -227,8 +227,13 @@ export function init() {
 
   imgBtnRestart = new Image();
   imgBtnRestart.src = "src/resetbtn.webp";
+
   imgBtnDiff = new Image();
   imgBtnDiff.src = "src/selectbtn.webp";
+
+  imgBtnDiffPause = new Image();
+  imgBtnDiffPause.src = "src/selectbtn-b.webp";
+
   imgLife = new Image();
   imgLife.src = "src/life.webp";
 
@@ -1239,9 +1244,9 @@ function drawPauseButton() {
     ctx.beginPath();
     ctx.arc(dx * scale, dy * scale, dr * scale, 0, Math.PI * 2);
     ctx.clip();
-    if (imgBtnDiff.complete && imgBtnDiff.naturalWidth > 0) {
+    if (imgBtnDiffPause.complete && imgBtnDiffPause.naturalWidth > 0) {
       ctx.drawImage(
-        imgBtnDiff,
+        imgBtnDiffPause,
         (dx - dr) * scale,
         (dy - dr) * scale,
         dr * 2 * scale,
