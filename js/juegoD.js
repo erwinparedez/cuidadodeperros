@@ -54,22 +54,22 @@ const cardsData = [
   },
   {
     img: "src/game-d/gamed-t2.webp",
-    subtitle: "Tomar Agua",
+    subtitle: "Ofrecele agua limpia",
     text: "Siempre ofrece agua a tu perro después de jugar. Beber agua ayuda a tu perro a refrescarse y recuperar fuerzas.",
   },
   {
     img: "src/game-d/gamed-t6.webp",
-    subtitle: "No Encerrado",
+    subtitle: "No lo dejes encerrado",
     text: "Tu perro necesita moverse y jugar todos los días. Moverse y explorar ayuda a tu perro a estar saludable y contento.",
   },
   {
     img: "src/game-d/gamed-t4.webp",
-    subtitle: "Juego Seguro",
+    subtitle: "Juegos y jueguetes seguros",
     text: "Asegurate que los juguetes sean seguros y mantén fuera de su alcance cualquier cosa que pueda lastimarlos.",
   },
   {
     img: "src/game-d/gamed-t5.webp",
-    subtitle: "Con Correa",
+    subtitle: "Paseos seguros",
     text: "Siempre pasea a tu perro con correa para que esté protegido y no se pierda.",
   },
   {

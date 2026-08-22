@@ -59,22 +59,22 @@ let currentCardData = null;
 const cardsData = [
   {
     img: "src/game-b/gameb-t1.webp",
-    subtitle: "Baño Con Ayuda",
-    text: "Siempre pide ayuda a un adulto para bañar a tu perro.",
+    subtitle: "Bajo la supervisión de un adulto",
+    text: "No bañes a tu perro tú solo, siempre pide ayuda a un adulto.",
   },
   {
     img: "src/game-b/gameb-t2.webp",
-    subtitle: "Agua Tibia",
-    text: "El agua que tome no debe estar ni muy fría ni muy caliente.",
+    subtitle: "Con agua tibia por favor",
+    text: "El agua que utilices no debe estar ni muy fría ni muy caliente.",
   },
   {
     img: "src/game-b/gameb-t3.webp",
-    subtitle: "Su Toalla",
-    text: "Tu perro debe tener una toalla limpia solo para él.",
+    subtitle: "Una toalla propia",
+    text: "No compartas tu toalla con tu perro, debes tener una toalla limpia solo para él.",
   },
   {
     img: "src/game-b/gameb-t4.webp",
-    subtitle: "Cuidado Con El Jabón",
+    subtitle: "Cuidado con el jabón",
     text: "El jabón no debe entrar en sus ojos, boca, ni orejas. Lava a tu perro con cuidado para que el jabón no le haga daño.",
   },
   {
@@ -84,7 +84,7 @@ const cardsData = [
   },
   {
     img: "src/game-b/gameb-t6.webp",
-    subtitle: "Con Calma",
+    subtitle: "Baños seguros",
     text: "Bañarlo con calma ayuda a que no tenga miedo. Si lo bañas con paciencia, tu perro tendrá menos miedo.",
   },
 ];
@@ -921,9 +921,9 @@ function drawUI() {
   if (s < 10) s = "0" + s;
   ctx.fillText(`${m}:${s}`, (BASE_W - 120) * scale, 50 * scale);
   const stageLabels = [
-    "Etapa 1: Mojado",
-    "Etapa 2: Shampoo y enjuague",
-    "Etapa 3: Secado y cepillado",
+    "Paso 1: Mojar con agua limpia",
+    "Paso 2: Aplica shampoo y enjuaga",
+    "Paso 3: Seca y cepilla",
   ];
   const { size, cell, gap } = currentBoardConfig;
   const boardBottom = gridY + size * (cell + gap) - gap + 22;

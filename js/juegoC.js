@@ -53,32 +53,32 @@ let currentCardData = null;
 const cardsData = [
   {
     img: "src/game-c/gamec-t1.webp",
-    subtitle: "Míralo Bien",
+    subtitle: "Atento a señales de alerta",
     text: "Si tu perro se rasca mucho, avisa a un adulto.",
   },
   {
     img: "src/game-c/gamec-t2.webp",
-    subtitle: "Lugar Limpio",
+    subtitle: "Una cama limpia para dormir",
     text: "Mantén limpio el lugar donde duerme tu perro.",
   },
   {
     img: "src/game-c/gamec-t3.webp",
-    subtitle: "Sus Vacunas",
+    subtitle: "Sus vacunas al día",
     text: "Las vacunas ayudan a proteger a tu perro de que se enferme. Lo mantienen sano y fuerte",
   },
   {
     img: "src/game-c/gamec-t4.webp",
-    subtitle: "Juguetes Limpios",
+    subtitle: "Juguetes limpios y seguros",
     text: "Es importante limpiar los juguetes de tu perro de vez en cuando.",
   },
   {
     img: "src/game-c/gamec-t5.webp",
-    subtitle: "No Basura",
+    subtitle: "Mantenlo alejado de la basura",
     text: "Tu perro no debe comer cosas de la basura porque podrían enfermarlo. Mantén la basura lejos para protegerlo.",
   },
   {
     img: "src/game-c/gamec-t6.webp",
-    subtitle: "Collar Especial",
+    subtitle: "Collares especiales para perros",
     text: "Ciertos collares ayudan a cuidar a tu perro y mantener alejados algunos bichos que le hacen daño.",
   },
 ];
@@ -115,24 +115,24 @@ const spawnDefs = [
 const configs = {
   easy: {
     target: 300,
-    speed: 1.6,
-    spawnInterval: 1300,
+    speed: 2,
+    spawnInterval: 1100,
     pRed: 0.8,
     pBlue: 0.18,
     pPurple: 0.02,
   },
   normal: {
     target: 600,
-    speed: 1.8,
-    spawnInterval: 1000,
+    speed: 2.4,
+    spawnInterval: 750,
     pRed: 0.5,
     pBlue: 0.4,
     pPurple: 0.1,
   },
   hard: {
     target: 900,
-    speed: 2.1,
-    spawnInterval: 900,
+    speed: 2.8,
+    spawnInterval: 500,
     pRed: 0.34,
     pBlue: 0.33,
     pPurple: 0.33,

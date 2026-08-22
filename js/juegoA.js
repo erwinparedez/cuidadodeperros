@@ -50,6 +50,7 @@ const PLAYER_SPEED = 5;
 
 // Circuit mode
 let circuitMode = false;
+let goodMessageToggle = false;
 let circuitCompleted = false;
 let currentLevelIndex = 0;
 let usedCardIndices = [];
@@ -68,32 +69,32 @@ let currentCardData = null;
 const cardsData = [
   {
     img: "src/game-a/gamea-t1.webp",
-    subtitle: "Agua Limpia",
+    subtitle: "Agua limpia para tomar",
     text: "Asegurate que tu perro siempre tenga agua limpia para tomar.",
   },
   {
     img: "src/game-a/gamea-t2.webp",
-    subtitle: "No Chocolate",
+    subtitle: "Los chocolates son venenos",
     text: "Mantén el chocolate y los dulces lejos de tu perro, porque le hacen mucho daño.",
   },
   {
     img: "src/game-a/gamea-t3.webp",
-    subtitle: "Comida para Perros",
+    subtitle: "Comida hecha para perros",
     text: "La mejor comida para un perro es la que está hecha para él.",
   },
   {
     img: "src/game-a/gamea-t4.webp",
-    subtitle: "Una Cantidad Justa",
+    subtitle: "Una cantidad justa",
     text: "Ni muy poca ni demasiada comida, comer demasiado también puede hacerle daño a tu perro.",
   },
   {
     img: "src/game-a/gamea-t5.webp",
-    subtitle: "Pregunta a un Adulto",
+    subtitle: "siempre pregunta a un adulto",
     text: "Antes de darle algo nuevo, pide ayuda a un adulto.",
   },
   {
     img: "src/game-a/gamea-t6.webp",
-    subtitle: "No Picante",
+    subtitle: "Lo picante le hace daño",
     text: "La comida picante no es buena para los perros, pueden hacerle doler mucho el estómago.",
   },
 ];
@@ -780,13 +781,26 @@ function update() {
     if (player.x + player.w > BASE_W) player.x = BASE_W - player.w;
   }
 
+  const now = performance.now();
+
   items.forEach((item, i) => {
+    if (item.color === "popup") {
+      if (now >= item.popupUntil) items.splice(i, 1);
+      return;
+    }
+
     item.y += item.speed;
 
     if (collide(player, item)) {
       if (item.color === "green") {
         score += 10;
         AudioManager.playSFX("src/game-a/gooditem.mp3");
+
+        item.color = "popup";
+        item.text = goodMessageToggle ? "¡Genial!" : "¡Muy bien!";
+        goodMessageToggle = !goodMessageToggle;
+        item.popupUntil = now + 800;
+        return;
       }
       if (item.color === "red") {
         lives--;
@@ -797,6 +811,7 @@ function update() {
         AudioManager.playSFX("src/game-a/powerup.mp3");
       }
       items.splice(i, 1);
+      return;
     }
 
     if (item.y > BASE_H) items.splice(i, 1);
@@ -897,6 +912,25 @@ function draw() {
   );
 
   items.forEach((item) => {
+    if (item.color === "popup") {
+      ctx.font = `bold ${24 * scale}px sans-serif`;
+      ctx.textAlign = "center";
+      ctx.lineJoin = "round";
+
+      const px = (item.x + item.size / 2) * scale;
+      const py = (item.y + item.size / 2) * scale;
+
+      ctx.strokeStyle = "white";
+      ctx.lineWidth = 4 * scale;
+      ctx.strokeText(item.text, px, py);
+
+      ctx.fillStyle = "#55E755";
+      ctx.fillText(item.text, px, py);
+
+      ctx.textAlign = "left";
+      return;
+    }
+
     const img = item.img;
     if (img && img.complete && img.naturalWidth > 0) {
       const imgSize = item.size * 1.4;
