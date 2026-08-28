@@ -49,25 +49,27 @@
         <div class="modal-contenido">
             <div class="personalizacion-title">
                 <h2>Personalización</h2>
-                <p>Elige con qué perros deseas jugar.</p>
+                <p>Completa todos los minijuegos para desbloquear nuevos personajes.</p>
             </div>
             <div class="customCards">
-
                 <div class="customCard" id="customCard-a" data-value="A" data-default-src="./src/chars-a01.webp"
                     data-selected-src="./src/chars-a03.webp">
                     <img src="" alt="" class="customCard-img" id="customCard-a-img">
                 </div>
 
-                <div class="customCard" id="customCard-b" data-value="B" data-default-src="./src/chars-b01.webp"
-                    data-selected-src="./src/chars-b03.webp">
+                <!-- Se añade la clase 'bloqueado' y el span de texto -->
+                <div class="customCard bloqueado" id="customCard-b" data-value="B"
+                    data-default-src="./src/chars-b01.webp" data-selected-src="./src/chars-b03.webp">
                     <img src="" alt="" class="customCard-img" id="customCard-b-img">
+                    <span class="texto-bloqueado">Bloqueado</span>
                 </div>
 
-                <div class="customCard" id="customCard-c" data-value="C" data-default-src="./src/chars-c01.webp"
-                    data-selected-src="./src/chars-c03.webp">
+                <!-- Se añade la clase 'bloqueado' y el span de texto -->
+                <div class="customCard bloqueado" id="customCard-c" data-value="C"
+                    data-default-src="./src/chars-c01.webp" data-selected-src="./src/chars-c03.webp">
                     <img src="" alt="" class="customCard-img" id="customCard-c-img">
+                    <span class="texto-bloqueado">Bloqueado</span>
                 </div>
-
             </div>
             <div>
                 <button class="btn-entendido text-font" id="btn-confirmar-modal">CONFIRMAR</button>
@@ -77,6 +79,9 @@
     <main>
         <!-- MENÚ PRINCIPAL -->
         <section class="menu-juegos activo" id="menu-juegos">
+            <!-- Contenedor para la notificación -->
+            <div id="notificacion-desbloqueo" class="notificacion-msj"></div>
+
             <button class="btn-nav2b" id="btn-nav2b">
                 <img src="./src/icon-a.webp" id="icon-custom" alt="icono">
             </button>

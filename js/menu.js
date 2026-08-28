@@ -219,6 +219,7 @@ function seleccionarCard(cardSeleccionada) {
     miniaturaC.src = "./src/game-c/miniatura-vet-a.webp";
     miniaturaD.src = "./src/game-d/miniatura-parque-a.webp";
     icon.src = Math.random() < 0.5 ? "./src/icon-a.webp" : "./src/icon-b.webp";
+    actualizarProgresion();
   }
 
   if (window.customCardSeleccionada === "B") {
@@ -231,6 +232,7 @@ function seleccionarCard(cardSeleccionada) {
     miniaturaC.src = "./src/game-c/miniatura-vet-b.webp";
     miniaturaD.src = "./src/game-d/miniatura-parque-b.webp";
     icon.src = Math.random() < 0.5 ? "./src/icon-c.webp" : "./src/icon-d.webp";
+    actualizarProgresion();
   }
 
   if (window.customCardSeleccionada === "C") {
@@ -243,6 +245,7 @@ function seleccionarCard(cardSeleccionada) {
     miniaturaC.src = "./src/game-c/miniatura-vet-c.webp";
     miniaturaD.src = "./src/game-d/miniatura-parque-c.webp";
     icon.src = Math.random() < 0.5 ? "./src/icon-e.webp" : "./src/icon-f.webp";
+    actualizarProgresion();
   }
 }
 
@@ -257,4 +260,122 @@ const cardInicial = document.querySelector("#customCard-a");
 
 if (cardInicial) {
   seleccionarCard(cardInicial);
+}
+// --- LÓGICA DE PROGRESIÓN Y DESBLOQUEOS (CORREGIDA Y COMPLETA) ---
+
+const notificacionesMostradas = { A: false, B: false, C: false };
+
+// Función robusta para verificar si UN módulo específico de un avatar está completado
+function verificarUnModulo(avatar, moduloIndex) {
+  let completado = false;
+
+  if (moduloIndex === 0 && window.gameA_moduleCompletadoPorAvatar) {
+    completado = window.gameA_moduleCompletadoPorAvatar[avatar] === true;
+  } else if (moduloIndex === 1 && window.gameB_moduleCompletadoPorAvatar) {
+    completado = window.gameB_moduleCompletadoPorAvatar[avatar] === true;
+  } else if (moduloIndex === 2 && window.gameC_moduleCompletadoPorAvatar) {
+    completado = window.gameC_moduleCompletadoPorAvatar[avatar] === true;
+  } else if (moduloIndex === 3 && window.gameD_moduleCompletadoPorAvatar) {
+    completado = window.gameD_moduleCompletadoPorAvatar[avatar] === true;
+  }
+
+  return completado;
+}
+
+// Verifica si LOS 4 MÓDULOS de un avatar específico han sido completados
+function avatarCompleto(avatar) {
+  const m0 = verificarUnModulo(avatar, 0);
+  const m1 = verificarUnModulo(avatar, 1);
+  const m2 = verificarUnModulo(avatar, 2);
+  const m3 = verificarUnModulo(avatar, 3);
+
+  // console.log(
+  //   `Progreso de los 4 módulos para Avatar [${avatar}]: M1=${m0}, M2=${m1}, M3=${m2}, M4=${m3}`,
+  // );
+  return m0 && m1 && m2 && m3;
+}
+
+function mostrarNotificacion(avatarTerminado) {
+  if (notificacionesMostradas[avatarTerminado]) return;
+
+  // Creamos o buscamos el contenedor de la notificación de forma dinámica para asegurar que exista
+  let notif = document.getElementById("notificacion-desbloqueo");
+  if (!notif) {
+    notif = document.createElement("div");
+    notif.id = "notificacion-desbloqueo";
+    notif.className = "notificacion-msj";
+    const menuJuegosEl = document.getElementById("menu-juegos");
+    if (menuJuegosEl) menuJuegosEl.appendChild(notif);
+  }
+
+  if (avatarTerminado === "A" || avatarTerminado === "B") {
+    notif.textContent = "Has desbloqueado nuevos personajes";
+  } else if (avatarTerminado === "C") {
+    notif.textContent = "¡Felicidades! Has completado todo el juego";
+  }
+
+  notif.classList.add("mostrar");
+  notificacionesMostradas[avatarTerminado] = true;
+  // console.log(
+  //   `Mostrando notificación por completar avatar: ${avatarTerminado}`,
+  // );
+
+  setTimeout(() => {
+    notif.classList.remove("mostrar");
+  }, 10000);
+}
+
+export function actualizarProgresion() {
+  // console.log("=== ACTUALIZANDO PROGRESIÓN EN MENÚ ===");
+  const modulos = document.querySelectorAll(".juego-item");
+  const avatarActual = window.customCardSeleccionada || "A";
+
+  // 1. Colorear módulos del avatar actual de verde si están completados
+  modulos.forEach((mod, index) => {
+    if (verificarUnModulo(avatarActual, index)) {
+      mod.classList.add("completado");
+    } else {
+      mod.classList.remove("completado");
+    }
+  });
+
+  // 2. Evaluar estado de completitud por cada avatar
+  const aCompletado = avatarCompleto("A");
+  const bCompletado = avatarCompleto("B");
+  const cCompletado = avatarCompleto("C");
+
+  const cardB = document.getElementById("customCard-b");
+  const cardC = document.getElementById("customCard-c");
+
+  // Desbloqueo Avatar B (requiere que A esté completo)
+  if (aCompletado && cardB) {
+    if (cardB.classList.contains("bloqueado")) {
+      // console.log("¡Desbloqueando Avatar B!");
+      cardB.classList.remove("bloqueado");
+    }
+    mostrarNotificacion("A");
+  }
+
+  // Desbloqueo Avatar C (requiere que B esté completo)
+  if (bCompletado && cardC) {
+    if (cardC.classList.contains("bloqueado")) {
+      // console.log("¡Desbloqueando Avatar C!");
+      cardC.classList.remove("bloqueado");
+    }
+    mostrarNotificacion("B");
+  }
+
+  // Fin de todo el juego (requiere que C esté completo)
+  if (cCompletado) {
+    mostrarNotificacion("C");
+  }
+  // console.log("=== FIN ACTUALIZACIÓN DE MENÚ ===");
+}
+
+// --- CONECTAR AL BOTÓN "VOLVER" Y CAMBIO DE AVATAR ---
+const btnVolverMenu = document.getElementById("btn-nav1");
+if (btnVolverMenu) {
+  btnVolverMenu.addEventListener("click", () => {
+    setTimeout(actualizarProgresion, 100);
+  });
 }

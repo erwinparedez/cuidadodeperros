@@ -17,6 +17,7 @@ let keyDownHandler;
 let keyUpHandler;
 let intervalTime;
 let intervalSpawn;
+let raceDifficultyInterval;
 let animationId;
 
 // Cursor auto-oculto
@@ -28,7 +29,7 @@ let imgBtnEasy, imgBtnNormal, imgBtnHard;
 let imgWin, imgLose, imgBtnRestart, imgBtnDiff, imgBtnDiffPause;
 let imgLife, imgBarIcon;
 let imgGood, imgBad, imgBonus;
-let imgCover, imgCoverBtn;
+let imgCover, imgCoverBtn, imgCoverBtnRace;
 
 let imgPauseBtn;
 let imgResumeBtn;
@@ -54,6 +55,7 @@ let goodMessageToggle = false;
 let circuitCompleted = false;
 let currentLevelIndex = 0;
 let usedCardIndices = [];
+let standaloneLevel = false;
 const circuitLevels = ["easy", "normal", "hard"];
 const circuitNames = ["Nivel 1", "Nivel 2", "Nivel 3"];
 const circuitLevelItems = {
@@ -61,6 +63,23 @@ const circuitLevelItems = {
   1: [5, 6, 7, 8, 9], // Nivel 2: f–j
   2: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], // Nivel 3: a–j
 };
+
+// Desbloqueo progresivo de niveles
+// 0 = solo Nivel 1 (easy) habilitado, 1 = hasta Nivel 2 (normal), 2 = hasta Nivel 3 (hard)
+let maxUnlockedLevel = 0;
+let moduleCompletado = false;
+let currentCardVariant = "A";
+
+// Modo carrera / ilimitado: por oleadas, hasta perder las 3 vidas
+let raceMode = false;
+let raceFinished = false;
+let raceWave = 1;
+let lastRaceScore = null;
+let bestRaceScore = null;
+let isNewRecord = false;
+
+const RACE_RAMP_INTERVAL_MS = 12000;
+const RACE_RAMP_STEP = 0.2;
 
 // Level intro
 let currentCardData = null;
@@ -103,6 +122,7 @@ let cardImages = [];
 
 // Botones especiales
 const coverBtn = { x: 750, y: 390, w: 210, h: 90 };
+const coverBtnRace = { x: 750, y: 290 + 70, w: 210, h: 90 };
 const entendidoBtn = { x: 560, y: 310, w: 160, h: 42 };
 const pauseBtn = { x: 940, y: 420, r: 35 };
 const pauseDiffBtn = { x: 940, y: 300, r: 35 };
@@ -111,6 +131,7 @@ const pauseDiffBtn = { x: 940, y: 300, r: 35 };
 let hoverRestart, hoverDiff;
 let hoverEasy, hoverNormal, hoverHard;
 let hoverCoverBtn = false;
+let hoverCoverBtnRace = false;
 let hoverEntendido = false;
 let hoverPause = false;
 let hoverPauseDiff = false;
@@ -122,29 +143,6 @@ let restartBtn, diffBtn;
 let player;
 
 const ITEM_SIZE = 90;
-
-const configs = {
-  easy: {
-    time: 180,
-    target: 180,
-    fallSpeed: 1.5,
-    spawnInterval: 1300,
-  },
-
-  normal: {
-    time: 120,
-    target: 250,
-    fallSpeed: 1.8,
-    spawnInterval: 950,
-  },
-
-  hard: {
-    time: 90,
-    target: 300,
-    fallSpeed: 2.5,
-    spawnInterval: 850,
-  },
-};
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -191,6 +189,56 @@ function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
   ctx.fillText(line, x, y);
 }
 
+function isLevelUnlocked(levelIndex) {
+  return levelIndex <= maxUnlockedLevel;
+}
+
+// ── Persistencia de progreso por avatar ──────────────────────────────────────
+
+const PROGRESS_STORAGE_KEY = "gameA_progresoPorAvatar";
+
+function loadAllProgress() {
+  try {
+    const raw = localStorage.getItem(PROGRESS_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    console.warn("No se pudo leer el progreso guardado:", e);
+    return {};
+  }
+}
+
+function loadProgress(variant) {
+  const all = loadAllProgress();
+  const data = all[variant];
+  return {
+    maxUnlockedLevel: data?.maxUnlockedLevel ?? 0,
+    moduleCompletado: data?.moduleCompletado ?? false,
+    bestRaceScore: data?.bestRaceScore ?? null,
+  };
+}
+
+function saveProgress(variant, progress) {
+  try {
+    const all = loadAllProgress();
+    all[variant] = progress;
+    localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(all));
+  } catch (e) {
+    console.warn("No se pudo guardar el progreso:", e);
+  }
+  refreshGlobalCompletionFlags();
+}
+
+function refreshGlobalCompletionFlags() {
+  const all = loadAllProgress();
+  const flags = {
+    A: !!all.A?.moduleCompletado,
+    B: !!all.B?.moduleCompletado,
+    C: !!all.C?.moduleCompletado,
+  };
+  window.gameA_moduleCompletadoPorAvatar = flags;
+  return flags;
+}
+
 // ─── Cursor helpers ───────────────────────────────────────────────────────────
 
 function showCursor(isPointer = false) {
@@ -226,6 +274,9 @@ export function init() {
 
   imgCoverBtn = new Image();
   imgCoverBtn.src = "src/play-btn.webp";
+
+  imgCoverBtnRace = new Image();
+  imgCoverBtnRace.src = "src/unlimit-btn.webp";
 
   imgBackground = new Image();
   const bgSrcs = {
@@ -422,12 +473,29 @@ export function init() {
   endScreenTime = null;
   circuitMode = false;
   currentLevelIndex = 0;
+  standaloneLevel = false;
   paused = false;
+
+  // Modo carrera / ilimitado
+  raceMode = false;
+  raceFinished = false;
+  raceWave = 1;
+  lastRaceScore = null;
+  isNewRecord = false;
+
+  // Progreso por avatar: se recupera lo que ya tenía desbloqueado/completado
+  // este avatar en particular (independiente de los demás avatares).
+  currentCardVariant = cardVariant;
+  const savedProgress = loadProgress(currentCardVariant);
+  maxUnlockedLevel = savedProgress.maxUnlockedLevel;
+  moduleCompletado = savedProgress.moduleCompletado;
+  bestRaceScore = savedProgress.bestRaceScore;
+  refreshGlobalCompletionFlags();
 
   player = { x: 450, y: 430, w: 100, h: 40 };
   hoverRestart = hoverDiff = false;
   hoverEasy = hoverNormal = hoverHard = false;
-  hoverCoverBtn = hoverEntendido = false;
+  hoverCoverBtn = hoverCoverBtnRace = hoverEntendido = false;
   hoverPause = false;
 
   restartBtn = { x: 645, y: 270, r: 80 };
@@ -462,7 +530,7 @@ export function init() {
 
     hoverRestart = hoverDiff = false;
     hoverEasy = hoverNormal = hoverHard = false;
-    hoverCoverBtn = hoverEntendido = false;
+    hoverCoverBtn = hoverCoverBtnRace = hoverEntendido = false;
     hoverPause = false;
     hoverPauseDiff = false;
 
@@ -472,6 +540,12 @@ export function init() {
         x < coverBtn.x + coverBtn.w &&
         y > coverBtn.y &&
         y < coverBtn.y + coverBtn.h;
+      hoverCoverBtnRace =
+        moduleCompletado &&
+        x > coverBtnRace.x &&
+        x < coverBtnRace.x + coverBtnRace.w &&
+        y > coverBtnRace.y &&
+        y < coverBtnRace.y + coverBtnRace.h;
     }
 
     if (state === "levelIntro") {
@@ -489,9 +563,12 @@ export function init() {
     }
 
     if (state === "difficulty") {
-      hoverEasy = x > 220 && x < 380 && y > 220 && y < 310;
-      hoverNormal = x > 420 && x < 580 && y > 220 && y < 310;
-      hoverHard = x > 620 && x < 780 && y > 220 && y < 310;
+      hoverEasy =
+        isLevelUnlocked(0) && x > 220 && x < 380 && y > 220 && y < 310;
+      hoverNormal =
+        isLevelUnlocked(1) && x > 420 && x < 580 && y > 220 && y < 310;
+      hoverHard =
+        isLevelUnlocked(2) && x > 620 && x < 780 && y > 220 && y < 310;
     }
 
     if (state === "playing") {
@@ -511,6 +588,7 @@ export function init() {
       hoverRestart ||
       hoverDiff ||
       hoverCoverBtn ||
+      hoverCoverBtnRace ||
       hoverEntendido ||
       hoverEasy ||
       hoverNormal ||
@@ -529,7 +607,7 @@ export function init() {
     }
     hoverRestart = hoverDiff = false;
     hoverEasy = hoverNormal = hoverHard = false;
-    hoverCoverBtn = hoverEntendido = false;
+    hoverCoverBtn = hoverCoverBtnRace = hoverEntendido = false;
     hoverPause = false;
     hoverPauseDiff = false;
 
@@ -568,9 +646,23 @@ export function init() {
         y < coverBtn.y + coverBtn.h
       ) {
         circuitMode = true;
+        raceMode = false;
+        standaloneLevel = false;
         currentLevelIndex = 0;
         usedCardIndices = [];
         showLevelIntro();
+        return;
+      }
+
+      if (
+        moduleCompletado &&
+        x > coverBtnRace.x &&
+        x < coverBtnRace.x + coverBtnRace.w &&
+        y > coverBtnRace.y &&
+        y < coverBtnRace.y + coverBtnRace.h
+      ) {
+        startRaceMode();
+        return;
       }
     }
 
@@ -589,27 +681,36 @@ export function init() {
     }
 
     if (state === "difficulty") {
-      if (x > 220 && x < 380 && y > 220 && y < 310) {
+      if (isLevelUnlocked(0) && x > 220 && x < 380 && y > 220 && y < 310) {
         config = configs.easy;
         dificultadActual = "Fácil";
         currentLevelIndex = 0;
         circuitMode = false;
+        raceMode = false;
+        raceFinished = false;
+        standaloneLevel = true;
         resetGame();
       }
 
-      if (x > 420 && x < 580 && y > 220 && y < 310) {
+      if (isLevelUnlocked(1) && x > 420 && x < 580 && y > 220 && y < 310) {
         config = configs.normal;
         dificultadActual = "Media";
         currentLevelIndex = 1;
         circuitMode = false;
+        raceMode = false;
+        raceFinished = false;
+        standaloneLevel = true;
         resetGame();
       }
 
-      if (x > 620 && x < 780 && y > 220 && y < 310) {
+      if (isLevelUnlocked(2) && x > 620 && x < 780 && y > 220 && y < 310) {
         config = configs.hard;
         dificultadActual = "Difícil";
         currentLevelIndex = 2;
         circuitMode = false;
+        raceMode = false;
+        raceFinished = false;
+        standaloneLevel = true;
         resetGame();
       }
     }
@@ -625,27 +726,58 @@ export function init() {
       ) {
         clearInterval(intervalSpawn);
         AudioManager.stopMusic();
+        AudioManager.stopAll();
         items = [];
         paused = false;
-        circuitMode = false;
         keysPressed["ArrowLeft"] = false;
         keysPressed["ArrowRight"] = false;
         // Restaurar cursor al salir de "playing"
         clearTimeout(cursorTimeout);
         cursorTimeout = null;
         canvas.style.cursor = "default";
-        state = "difficulty";
+
+        if (raceMode) {
+          raceMode = false;
+          raceFinished = false;
+          circuitMode = false;
+          state = "cover";
+        } else {
+          circuitMode = false;
+          raceMode = false;
+          raceFinished = false;
+          state = "difficulty";
+        }
         return;
       }
     }
 
     if (state === "gameover" || state === "victory") {
       if (performance.now() - endScreenTime < 600) return;
-      if (Math.hypot(x - restartBtn.x, y - restartBtn.y) < restartBtn.r)
-        resetGame();
+      if (Math.hypot(x - restartBtn.x, y - restartBtn.y) < restartBtn.r) {
+        if (raceFinished) {
+          startRaceMode();
+        } else {
+          resetGame();
+        }
+      }
       if (Math.hypot(x - diffBtn.x, y - diffBtn.y) < diffBtn.r) {
-        circuitMode = false;
-        state = "difficulty";
+        AudioManager.stopMusic();
+        AudioManager.stopAll();
+        if (raceFinished) {
+          raceFinished = false;
+          raceMode = false;
+          circuitMode = false;
+          state = "cover";
+        } else if (standaloneLevel) {
+          // Se jugó un solo nivel desde "Seleccionar nivel": vuelve ahí
+          circuitMode = false;
+          state = "difficulty";
+        } else {
+          // Se jugó el circuito completo (ganado o perdido): vuelve al menú principal
+          circuitMode = false;
+          circuitCompleted = false;
+          state = "cover";
+        }
       }
     }
   };
@@ -653,6 +785,8 @@ export function init() {
 
   // Temporizador
   intervalTime = setInterval(() => {
+    if (raceMode) return;
+
     if (state === "playing" && !paused) {
       time--;
       if (time <= 0) {
@@ -668,6 +802,23 @@ export function init() {
       }
     }
   }, 1000);
+
+  // Dificultad progresiva del modo carrera (oleadas)
+  raceDifficultyInterval = setInterval(() => {
+    if (raceMode && state === "playing" && !paused) {
+      config.fallSpeed =
+        Math.round((config.fallSpeed + RACE_RAMP_STEP) * 100) / 100;
+
+      const currentFrequency = 1000 / config.spawnInterval;
+      const newFrequency = currentFrequency + RACE_RAMP_STEP;
+      config.spawnInterval = 1000 / newFrequency;
+
+      raceWave++;
+
+      clearInterval(intervalSpawn);
+      startSpawnInterval();
+    }
+  }, RACE_RAMP_INTERVAL_MS);
 
   // Loop
   function loop() {
@@ -700,6 +851,7 @@ export function cleanup() {
   canvas.removeEventListener("click", clickHandler);
   clearInterval(intervalTime);
   clearInterval(intervalSpawn);
+  clearInterval(raceDifficultyInterval);
   cancelAnimationFrame(animationId);
   // Limpiar timeout del cursor y restaurarlo
   clearTimeout(cursorTimeout);
@@ -753,6 +905,26 @@ function resetGame() {
   score = 0;
   lives = 3;
   time = config.time;
+  state = "playing";
+  paused = false;
+  endScreenTime = null;
+  startSpawnInterval();
+  AudioManager.playMusic("src/game-a/bgmusic-a.mp3");
+}
+
+function startRaceMode() {
+  raceMode = true;
+  raceFinished = false;
+  circuitMode = false;
+  standaloneLevel = false;
+  currentLevelIndex = 2;
+  config = { ...configs.normal };
+  items = [];
+  score = 0;
+  lives = 3;
+  raceWave = 1;
+  lastRaceScore = null;
+  isNewRecord = false;
   state = "playing";
   paused = false;
   endScreenTime = null;
@@ -819,17 +991,40 @@ function update() {
 
   if (lives <= 0 && state === "playing") {
     paused = false;
-    state = "gameover";
-    endScreenTime = performance.now();
-    // Restaurar cursor al salir de "playing"
     clearTimeout(cursorTimeout);
     cursorTimeout = null;
     canvas.style.cursor = "default";
+    clearInterval(intervalSpawn);
     AudioManager.stopMusic();
-    AudioManager.playSFX("src/sounds/gameover.mp3");
+
+    if (raceMode) {
+      raceMode = false;
+      raceFinished = true;
+      lastRaceScore = score;
+      state = "victory";
+      endScreenTime = performance.now();
+      AudioManager.playSFX("src/sounds/victory.mp3");
+
+      const stored = loadProgress(currentCardVariant);
+      const previousBest = stored.bestRaceScore;
+      isNewRecord = previousBest === null || lastRaceScore > previousBest;
+      const newBest = isNewRecord ? lastRaceScore : previousBest;
+      bestRaceScore = newBest;
+
+      saveProgress(currentCardVariant, {
+        maxUnlockedLevel: stored.maxUnlockedLevel,
+        moduleCompletado: stored.moduleCompletado,
+        bestRaceScore: newBest,
+      });
+    } else {
+      state = "gameover";
+      endScreenTime = performance.now();
+      AudioManager.playSFX("src/sounds/gameover.mp3");
+    }
+    return;
   }
 
-  if (score >= config.target && state === "playing") {
+  if (!raceMode && score >= config.target && state === "playing") {
     state = "finished";
     paused = false;
 
@@ -837,6 +1032,21 @@ function update() {
     clearTimeout(cursorTimeout);
     cursorTimeout = null;
     canvas.style.cursor = "default";
+
+    if (currentLevelIndex + 1 > maxUnlockedLevel) {
+      maxUnlockedLevel = Math.min(currentLevelIndex + 1, 2);
+    }
+    if (currentLevelIndex === 2 && !moduleCompletado) {
+      moduleCompletado = true;
+      // console.log(
+      //   `1er Módulo de alimentos completado, con el avatar ${currentCardVariant}.`,
+      // );
+    }
+    saveProgress(currentCardVariant, {
+      maxUnlockedLevel,
+      moduleCompletado,
+      bestRaceScore,
+    });
 
     AudioManager.stopMusic();
     AudioManager.playSFX("src/sounds/victory.mp3");
@@ -971,6 +1181,8 @@ function draw() {
 }
 
 function drawCover() {
+  coverBtn.y = moduleCompletado ? 290 : 390;
+
   if (imgCover.complete && imgCover.naturalWidth > 0) {
     ctx.drawImage(imgCover, 0, 0, canvas.width, canvas.height);
   } else {
@@ -1021,6 +1233,48 @@ function drawCover() {
     ctx.textAlign = "left";
   }
   ctx.globalAlpha = 1;
+
+  if (moduleCompletado) {
+    const cx2 = coverBtnRace.x + coverBtnRace.w / 2;
+    const cy2 = coverBtnRace.y + coverBtnRace.h / 2;
+
+    ctx.globalAlpha = hoverCoverBtnRace ? 0.8 : 1;
+
+    if (imgCoverBtnRace.complete && imgCoverBtnRace.naturalWidth > 0) {
+      const ratio2 =
+        imgCoverBtnRace.naturalWidth / imgCoverBtnRace.naturalHeight;
+      let finalW2 = coverBtnRace.w;
+      let finalH2 = finalW2 / ratio2;
+      if (finalH2 > coverBtnRace.h) {
+        finalH2 = coverBtnRace.h;
+        finalW2 = finalH2 * ratio2;
+      }
+      ctx.drawImage(
+        imgCoverBtnRace,
+        (cx2 - finalW2 / 2) * scale,
+        (cy2 - finalH2 / 2) * scale,
+        finalW2 * scale,
+        finalH2 * scale,
+      );
+    } else {
+      ctx.fillStyle = "#F8C436";
+      roundRect(
+        ctx,
+        (cx2 - coverBtnRace.w / 2) * scale,
+        (cy2 - coverBtnRace.h / 2) * scale,
+        coverBtnRace.w * scale,
+        coverBtnRace.h * scale,
+        12 * scale,
+      );
+      ctx.fill();
+      ctx.fillStyle = "#091C53";
+      ctx.font = `bold ${22 * scale}px sans-serif`;
+      ctx.textAlign = "center";
+      ctx.fillText("¡JUGAR!", cx2 * scale, (cy2 + 8) * scale);
+      ctx.textAlign = "left";
+    }
+    ctx.globalAlpha = 1;
+  }
 }
 
 function drawLevelIntro() {
@@ -1151,13 +1405,25 @@ function drawUI() {
   ctx.fillStyle = "#091C53";
   ctx.fillRect(barX * scale, barY * scale, barW * scale, barH * scale);
 
-  ctx.fillStyle = "#F8C436";
-  ctx.fillRect(
-    barX * scale,
-    barY * scale,
-    barW * (score / config.target) * scale,
-    barH * scale,
-  );
+  if (raceMode || raceFinished) {
+    ctx.fillStyle = "white";
+    ctx.font = `bold ${18 * scale}px sans-serif`;
+    ctx.textAlign = "center";
+    ctx.fillText(
+      `Puntos: ${raceFinished ? (lastRaceScore ?? score) : score}`,
+      (barX + barW / 2) * scale,
+      (barY + barH - 5) * scale,
+    );
+    ctx.textAlign = "left";
+  } else {
+    ctx.fillStyle = "#F8C436";
+    ctx.fillRect(
+      barX * scale,
+      barY * scale,
+      barW * Math.min(1, score / config.target) * scale,
+      barH * scale,
+    );
+  }
 
   const iconSize = barH + 35;
   if (imgBarIcon.complete && imgBarIcon.naturalWidth > 0) {
@@ -1196,12 +1462,20 @@ function drawUI() {
     }
   }
 
-  ctx.fillStyle = "#091C53";
-  ctx.font = `${40 * scale}px sans-serif`;
-  let m = Math.floor(time / 60);
-  let s = time % 60;
-  if (s < 10) s = "0" + s;
-  ctx.fillText(`${m}:${s}`, (BASE_W - 120) * scale, 50 * scale);
+  if (raceMode || raceFinished) {
+    ctx.fillStyle = "#091C53";
+    ctx.font = `bold ${30 * scale}px sans-serif`;
+    ctx.textAlign = "right";
+    ctx.fillText(`Oleada ${raceWave}`, (BASE_W - 60) * scale, 50 * scale);
+    ctx.textAlign = "left";
+  } else {
+    ctx.fillStyle = "#091C53";
+    ctx.font = `${40 * scale}px sans-serif`;
+    let m = Math.floor(time / 60);
+    let s = time % 60;
+    if (s < 10) s = "0" + s;
+    ctx.fillText(`${m}:${s}`, (BASE_W - 120) * scale, 50 * scale);
+  }
 }
 
 function drawOverlay() {
@@ -1227,7 +1501,13 @@ function drawVictory() {
   ctx.fillText("¡GANASTE!", 560 * scale, 140 * scale);
   ctx.fillStyle = "white";
   ctx.font = `${22 * scale}px sans-serif`;
-  ctx.fillText("¿Te gustaría volver a jugar?", 595 * scale, 175 * scale);
+  ctx.fillText(
+    raceFinished
+      ? "¿Te gustaría intentar superar tu puntaje?"
+      : "¿Te gustaría volver a jugar?",
+    raceFinished ? 545 * scale : 595 * scale,
+    175 * scale,
+  );
   drawEndScreen(true);
 }
 
@@ -1257,19 +1537,44 @@ function drawEndScreen(win) {
   }
 
   drawEndButton(imgBtnRestart, restartBtn, 55, hoverRestart);
-  drawEndButton(imgBtnDiff, diffBtn, 55, hoverDiff);
+  drawEndButton(
+    imgBtnDiff,
+    diffBtn,
+    55,
+    hoverDiff,
+    raceFinished || !standaloneLevel
+      ? ["Volver", "al menú"]
+      : ["Seleccionar", "un nivel"],
+  );
 
   ctx.fillStyle = "white";
   ctx.font = `${20 * scale}px sans-serif`;
   ctx.textAlign = "left";
-  ctx.fillText(
-    `Nivel: ${currentLevelIndex + 1} (${dificultadActual})`,
-    40 * scale,
-    (BASE_H - 20) * scale,
-  );
+
+  if (raceFinished) {
+    const currentScore = lastRaceScore ?? score;
+    const bestScoreVal = bestRaceScore !== null ? bestRaceScore : currentScore;
+    const baseText = `Puntuación actual: ${currentScore} - Mejor puntuación: ${bestScoreVal}`;
+    ctx.fillText(baseText, 40 * scale, (BASE_H - 20) * scale);
+    if (isNewRecord) {
+      const textWidth = ctx.measureText(baseText + " ").width;
+      ctx.fillStyle = "#FFD700";
+      ctx.fillText(
+        " NUEVO RECORD",
+        40 * scale + textWidth,
+        (BASE_H - 20) * scale,
+      );
+    }
+  } else {
+    ctx.fillText(
+      `Nivel: ${currentLevelIndex + 1} (${dificultadActual})`,
+      40 * scale,
+      (BASE_H - 20) * scale,
+    );
+  }
 }
 
-function drawEndButton(img, btn, r, hover) {
+function drawEndButton(img, btn, r, hover, labelLines) {
   const radius = hover ? r * 1.1 : r;
   ctx.globalAlpha = hover ? 0.9 : 1;
   ctx.save();
@@ -1295,11 +1600,16 @@ function drawEndButton(img, btn, r, hover) {
   ctx.font = `${20 * scale}px sans-serif`;
   ctx.textAlign = "left";
   if (btn === restartBtn) {
-    ctx.fillText("Volver", 615 * scale, 355 * scale);
-    ctx.fillText("a jugar", 613 * scale, 380 * scale);
+    const lines = labelLines || ["Volver", "a jugar"];
+    ctx.fillText(lines[0], 615 * scale, 355 * scale);
+    ctx.fillText(lines[1], 613 * scale, 380 * scale);
   } else {
-    ctx.fillText("Seleccionar", 770 * scale, 355 * scale);
-    ctx.fillText("dificultad", 785 * scale, 380 * scale);
+    const lines = labelLines || ["Volver", "al menú"];
+    const isSelectLevel = lines[0] === "Seleccionar";
+    const x0 = isSelectLevel ? 775 : 795;
+    const x1 = isSelectLevel ? 790 : 785;
+    ctx.fillText(lines[0], x0 * scale, 355 * scale);
+    ctx.fillText(lines[1], x1 * scale, 380 * scale);
   }
   ctx.textAlign = "left";
 }
@@ -1315,27 +1625,26 @@ function drawDifficulty() {
 
   ctx.fillStyle = "white";
   ctx.font = `bold ${58 * scale}px sans-serif`;
-  ctx.fillText(
-    "Selecciona la Dificultad",
-    (BASE_W / 2 - 320) * scale,
-    120 * scale,
-  );
+  ctx.fillText("Selecciona el Nivel", (BASE_W / 2 - 265) * scale, 120 * scale);
 
-  drawDiffButton(imgBtnEasy, 300, hoverEasy);
-  drawDiffButton(imgBtnNormal, 500, hoverNormal);
-  drawDiffButton(imgBtnHard, 700, hoverHard);
+  drawDiffButton(imgBtnEasy, 300, hoverEasy, isLevelUnlocked(0));
+  drawDiffButton(imgBtnNormal, 500, hoverNormal, isLevelUnlocked(1));
+  drawDiffButton(imgBtnHard, 700, hoverHard, isLevelUnlocked(2));
 }
 
-function drawDiffButton(img, x, hover) {
+function drawDiffButton(img, x, hover, unlocked = true) {
   const baseR = 75;
-  const r = hover ? baseR * 1.1 : baseR;
+  const r = hover && unlocked ? baseR * 1.1 : baseR;
   const cy = 265;
 
-  ctx.globalAlpha = hover ? 0.9 : 1;
+  ctx.globalAlpha = !unlocked ? 0.5 : hover ? 0.9 : 1;
   ctx.save();
   ctx.beginPath();
   ctx.arc(x * scale, cy * scale, r * scale, 0, Math.PI * 2);
   ctx.clip();
+  if (!unlocked) {
+    ctx.filter = "grayscale(1)";
+  }
   if (img.complete && img.naturalWidth > 0) {
     ctx.drawImage(
       img,
@@ -1348,15 +1657,24 @@ function drawDiffButton(img, x, hover) {
     ctx.fillStyle = "white";
     ctx.fill();
   }
+  ctx.filter = "none";
   ctx.restore();
   ctx.globalAlpha = 1;
+
+  if (!unlocked) {
+    ctx.fillStyle = "white";
+    ctx.font = `bold ${16 * scale}px sans-serif`;
+    ctx.textAlign = "center";
+    ctx.fillText("Bloqueado", x * scale, (cy + r + 24) * scale);
+    ctx.textAlign = "left";
+  }
 }
 
 function drawPauseButton() {
   const { x, y, r } = pauseBtn;
 
   if (paused) {
-    // Botón seleccionar dificultad (solo visible en pausa)
+    // Botón seleccionar nivel / volver al menú (solo visible en pausa)
     const { x: dx, y: dy, r: dr } = pauseDiffBtn;
     ctx.save();
     ctx.beginPath();
@@ -1380,8 +1698,16 @@ function drawPauseButton() {
     ctx.fillStyle = "white";
     ctx.font = `${18 * scale}px sans-serif`;
     ctx.textAlign = "center";
-    ctx.fillText("Seleccionar", dx * scale, (dy + dr + 18) * scale);
-    ctx.fillText("dificultad", dx * scale, (dy + dr + 38) * scale);
+    ctx.fillText(
+      raceMode ? "Volver" : "Seleccionar",
+      dx * scale,
+      (dy + dr + 18) * scale,
+    );
+    ctx.fillText(
+      raceMode ? "al menú" : "un nivel",
+      dx * scale,
+      (dy + dr + 38) * scale,
+    );
     ctx.globalAlpha = 1;
     ctx.textAlign = "left";
   }
