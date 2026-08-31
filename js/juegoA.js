@@ -120,6 +120,30 @@ const cardsData = [
 
 let cardImages = [];
 
+//Configuraciones
+const configs = {
+  easy: {
+    time: 60,
+    target: 100,
+    fallSpeed: 2.8,
+    spawnInterval: 1100,
+  },
+
+  normal: {
+    time: 60,
+    target: 150,
+    fallSpeed: 3,
+    spawnInterval: 900,
+  },
+
+  hard: {
+    time: 60,
+    target: 200,
+    fallSpeed: 3.5,
+    spawnInterval: 700,
+  },
+};
+
 // Botones especiales
 const coverBtn = { x: 750, y: 390, w: 210, h: 90 };
 const coverBtnRace = { x: 750, y: 290 + 70, w: 210, h: 90 };

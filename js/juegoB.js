@@ -134,8 +134,6 @@ const configs = {
   hard: { time: 300, board: { size: 5, cell: 66, gap: 4 } },
 };
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
 function roundRect(ctx, x, y, w, h, r) {
   ctx.beginPath();
   ctx.moveTo(x + r, y);
