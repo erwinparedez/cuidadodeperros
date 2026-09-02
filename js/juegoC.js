@@ -75,7 +75,7 @@ const cardsData = [
   {
     img: "src/game-c/gamec-t2.webp",
     subtitle: "Una cama limpia para dormir",
-    text: "Mantén limpio el lugar donde duerme tu perro.",
+    text: "Mantén limpia la cama de tu perro para ayudar a evitar bichitos y suciedad.",
   },
   {
     img: "src/game-c/gamec-t3.webp",
@@ -84,8 +84,8 @@ const cardsData = [
   },
   {
     img: "src/game-c/gamec-t4.webp",
-    subtitle: "Juguetes limpios y seguros",
-    text: "Es importante limpiar los juguetes de tu perro de vez en cuando.",
+    subtitle: "Juguetes seguros para perros",
+    text: "Un perro puede morder un juguete hasta arrancar pedazos y después tragárselos. Asegúrate de escoger juguetes seguros para ellos.",
   },
   {
     img: "src/game-c/gamec-t5.webp",
@@ -95,7 +95,7 @@ const cardsData = [
   {
     img: "src/game-c/gamec-t6.webp",
     subtitle: "Collares especiales para perros",
-    text: "Ciertos collares ayudan a cuidar a tu perro y mantener alejados algunos bichos que le hacen daño.",
+    text: "Algunos collares ayudan a cuidar a tu perro y mantener alejados algunos bichitos que le hacen daño.",
   },
 ];
 let cardImages = [];
