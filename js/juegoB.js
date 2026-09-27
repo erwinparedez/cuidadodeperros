@@ -134,6 +134,13 @@ const configs = {
   hard: { time: 300, board: { size: 5, cell: 66, gap: 4 } },
 };
 
+// Pruebas
+// const configs = {
+//   easy: { time: 180, board: { size: 1, cell: 120, gap: 6 } },
+//   normal: { time: 240, board: { size: 1, cell: 86, gap: 5 } },
+//   hard: { time: 300, board: { size: 1, cell: 66, gap: 4 } },
+// };
+
 function roundRect(ctx, x, y, w, h, r) {
   ctx.beginPath();
   ctx.moveTo(x + r, y);
@@ -189,7 +196,7 @@ function formatMMSS(totalSeconds) {
   return `${m}:${s}`;
 }
 
-// ── Persistencia de progreso por avatar ──────────────────────────────────────
+// Persistencia de progreso por avatar
 
 const PROGRESS_STORAGE_KEY = "gameB_progresoPorAvatar";
 
@@ -235,12 +242,11 @@ function refreshGlobalCompletionFlags() {
   return flags;
 }
 
-// ─────────────────────────────────────────────
 export function init() {
   canvas = document.getElementById("game");
   ctx = canvas.getContext("2d");
   const cardVariant = (window.customCardSeleccionada || "A").toUpperCase();
-  // ── Imágenes ──────────────────────────────
+  // Imágenes
 
   imgCover = new Image();
   const coverSrcs = {
@@ -359,7 +365,7 @@ export function init() {
     return img;
   });
 
-  // ── Estado inicial ─────────────────────────
+  // Estado inicial
 
   state = "cover";
   config = configs.easy;
@@ -400,7 +406,7 @@ export function init() {
   restartBtn = { x: 645, y: 270, r: 80 };
   diffBtn = { x: 825, y: 270, r: 80 };
 
-  // ── resize ─────────────────────────────────
+  // resize
 
   resizeHandler = () => {
     const rect = canvas.getBoundingClientRect();
@@ -411,7 +417,7 @@ export function init() {
   window.addEventListener("resize", resizeHandler);
   resizeHandler();
 
-  // ── mousemove ──────────────────────────────
+  // mousemove
 
   mouseMoveHandler = (e) => {
     const rect = canvas.getBoundingClientRect();
@@ -511,7 +517,7 @@ export function init() {
   };
   canvas.addEventListener("mousemove", mouseMoveHandler);
 
-  // ── mouseleave: pausa automática + cancelar drag ───
+  // mouseleave: pausa automática + cancelar drag
 
   mouseLeaveHandler = () => {
     dragPiece = null;
@@ -524,7 +530,7 @@ export function init() {
   };
   canvas.addEventListener("mouseleave", mouseLeaveHandler);
 
-  // ── mousedown: iniciar arrastre ────────────
+  // mousedown: iniciar arrastre
 
   mouseDownHandler = (e) => {
     if (state !== "playing" || paused || showFullImage) return;
@@ -558,7 +564,7 @@ export function init() {
   };
   canvas.addEventListener("mousedown", mouseDownHandler);
 
-  // ── mouseup: soltar y verificar snap ──────
+  // mouseup: soltar y verificar snap
 
   mouseUpHandler = (e) => {
     if (!dragPiece) return;
@@ -591,7 +597,7 @@ export function init() {
   };
   window.addEventListener("mouseup", mouseUpHandler);
 
-  // ── click: botones de UI ───────────────────
+  // click: botones de UI
 
   clickHandler = (e) => {
     const rect = canvas.getBoundingClientRect();
@@ -733,7 +739,7 @@ export function init() {
   };
   canvas.addEventListener("click", clickHandler);
 
-  // ── Temporizador ───────────────────────────
+  // Temporizador
 
   intervalTime = setInterval(() => {
     if (raceMode) {
@@ -755,7 +761,7 @@ export function init() {
     }
   }, 1000);
 
-  // ── Loop ───────────────────────────────────
+  // Loop
 
   function loop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -888,7 +894,6 @@ function showLevelIntro() {
   state = "levelIntro";
 }
 
-// ─────────────────────────────────────────────
 export function cleanup() {
   AudioManager.stopAll();
   window.removeEventListener("resize", resizeHandler);
@@ -1002,7 +1007,7 @@ function startRaceMode() {
   startGame();
 }
 
-// ─── Draw ─────────────────────────────────────────────────────────────────────
+// Draw
 
 function drawBoardSlots() {
   if (!currentBoardConfig) return;
@@ -1143,8 +1148,8 @@ function drawUI() {
   }
   const stageLabels = [
     "Paso 1: Mojar con agua limpia",
-    "Paso 2: Aplica shampoo y enjuaga",
-    "Paso 3: Seca y cepilla",
+    "Paso 2: Aplicar shampoo y enjuagar con más agua",
+    "Paso 3: Secar y cepillar su pelaje",
   ];
   const { size, cell, gap } = currentBoardConfig;
   const boardBottom = gridY + size * (cell + gap) - gap + 22;
@@ -1190,7 +1195,7 @@ function drawOverlay() {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
-// ─── Portada ──────────────────────────────────────────────────────────────────
+// Portada
 
 function drawCover() {
   coverBtn.y = moduleCompletado ? 290 : 390;
@@ -1287,7 +1292,7 @@ function drawCover() {
   }
 }
 
-// ─── Intro de nivel ───────────────────────────────────────────────────────────
+// Intro de nivel
 
 function drawLevelIntro() {
   if (imgBackground.complete && imgBackground.naturalWidth > 0) {
@@ -1573,7 +1578,7 @@ function drawDiffButton(img, x, hover, unlocked = true) {
   }
 }
 
-// ─── Pausa ────────────────────────────────────────────────────────────────────
+// Pausa
 
 function drawPauseButton() {
   const { x, y, r } = pauseBtn;

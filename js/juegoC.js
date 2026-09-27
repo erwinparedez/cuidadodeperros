@@ -140,28 +140,56 @@ const configs = {
     pPurple: 0.02,
   },
   normal: {
-    target: 600,
+    target: 500,
     speed: 2.9,
-    spawnInterval: 700,
+    spawnInterval: 900,
     pRed: 0.4,
     pBlue: 0.4,
     pPurple: 0.2,
   },
   hard: {
-    target: 900,
+    target: 800,
     speed: 3.2,
-    spawnInterval: 600,
+    spawnInterval: 850,
     pRed: 0.34,
     pBlue: 0.33,
     pPurple: 0.33,
   },
 };
 
+// Pruebas
+// const configs = {
+//   easy: {
+//     target: 10,
+//     speed: 4,
+//     spawnInterval: 1000,
+//     pRed: 0.8,
+//     pBlue: 0.18,
+//     pPurple: 0.02,
+//   },
+//   normal: {
+//     target: 10,
+//     speed: 4,
+//     spawnInterval: 900,
+//     pRed: 0.4,
+//     pBlue: 0.4,
+//     pPurple: 0.2,
+//   },
+//   hard: {
+//     target: 10,
+//     speed: 4,
+//     spawnInterval: 850,
+//     pRed: 0.34,
+//     pBlue: 0.33,
+//     pPurple: 0.33,
+//   },
+// };
+
 // Cada cuánto tiempo (ms) sube la dificultad en modo carrera, y en cuánto sube
 const RACE_RAMP_INTERVAL_MS = 12000;
 const RACE_RAMP_STEP = 0.1;
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// Helpers
 
 function roundRect(ctx, x, y, w, h, r) {
   ctx.beginPath();
@@ -209,7 +237,7 @@ function isLevelUnlocked(levelIndex) {
   return levelIndex <= maxUnlockedLevel;
 }
 
-// ── Persistencia de progreso por avatar ──────────────────────────────────────
+// Persistencia de progreso por avatar
 
 const PROGRESS_STORAGE_KEY = "gameC_progresoPorAvatar";
 
@@ -255,13 +283,12 @@ function refreshGlobalCompletionFlags() {
   return flags;
 }
 
-// ─────────────────────────────────────────────
 export function init() {
   canvas = document.getElementById("game");
   ctx = canvas.getContext("2d");
   const cardVariant = (window.customCardSeleccionada || "A").toUpperCase();
 
-  // ── Imágenes ──────────────────────────────
+  // Imágenes
 
   imgCover = new Image();
   const coverSrcs = {
@@ -364,7 +391,7 @@ export function init() {
     return img;
   });
 
-  // ── Estado inicial ─────────────────────────
+  // Estado inicial
   state = "cover";
   config = configs.easy;
   items = [];
@@ -398,7 +425,7 @@ export function init() {
   restartBtn = { x: 645, y: 270, r: 80 };
   diffBtn = { x: 825, y: 270, r: 80 };
 
-  // ── resize ─────────────────────────────────
+  // resize
   resizeHandler = () => {
     const rect = canvas.getBoundingClientRect();
     canvas.width = rect.width;
@@ -408,7 +435,7 @@ export function init() {
   window.addEventListener("resize", resizeHandler);
   resizeHandler();
 
-  // ── mousemove ──────────────────────────────
+  // mousemove
   mouseMoveHandler = (e) => {
     const rect = canvas.getBoundingClientRect();
     const x = (e.clientX - rect.left) / scale;
@@ -495,7 +522,7 @@ export function init() {
   };
   canvas.addEventListener("mousemove", mouseMoveHandler);
 
-  // ── mouseleave: pausa automática ───────────
+  // mouseleave: pausa automática
   mouseLeaveHandler = () => {
     if (state === "playing") paused = true;
     hoverRestart = hoverDiff = false;
@@ -506,7 +533,7 @@ export function init() {
   };
   canvas.addEventListener("mouseleave", mouseLeaveHandler);
 
-  // ── click ──────────────────────────────────
+  // click
   clickHandler = (e) => {
     const rect = canvas.getBoundingClientRect();
     const x = (e.clientX - rect.left) / scale;
@@ -707,10 +734,10 @@ export function init() {
   };
   canvas.addEventListener("pointerdown", clickHandler);
 
-  // ── Spawn dinámico ─────────────────────────
+  // Spawn dinámico
   scheduleSpawn();
 
-  // ── Dificultad progresiva del modo carrera ─
+  // Dificultad progresiva del modo carrera
   raceDifficultyInterval = setInterval(() => {
     if (raceMode && state === "playing" && !paused) {
       config.speed = Math.round((config.speed + RACE_RAMP_STEP) * 100) / 100;
@@ -723,7 +750,7 @@ export function init() {
     }
   }, RACE_RAMP_INTERVAL_MS);
 
-  // ── Loop ───────────────────────────────────
+  // Loop
   function loop() {
     update();
     draw();
@@ -744,7 +771,6 @@ function showLevelIntro() {
   state = "levelIntro";
 }
 
-// ─────────────────────────────────────────────
 export function cleanup() {
   AudioManager.stopAll();
   window.removeEventListener("resize", resizeHandler);
@@ -758,8 +784,6 @@ export function cleanup() {
 
   canvas.style.cursor = "default";
 }
-
-// ─────────────────────────────────────────────
 
 function scheduleSpawn() {
   spawnTimeout = setTimeout(() => {
@@ -995,7 +1019,7 @@ function update() {
   ghosts = ghosts.filter((g) => now - g.born < 1500);
 }
 
-// ─── Draw ─────────────────────────────────────────────────────────────────────
+// Draw
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1094,7 +1118,7 @@ function draw() {
   if (state === "victory") drawVictory();
 }
 
-// ─── Pantalla de portada ───────────────────────────────────────────────────────
+// Pantalla de portada
 
 function drawCover() {
   coverBtn.y = moduleCompletado ? 290 : 390;
@@ -1192,7 +1216,7 @@ function drawCover() {
   }
 }
 
-// ─── Intro de nivel ───────────────────────────────────────────────────────────
+// Intro de nivel
 
 function drawLevelIntro() {
   if (imgBackground.complete && imgBackground.naturalWidth > 0) {
@@ -1311,7 +1335,7 @@ function drawLevelIntro() {
   ctx.textAlign = "left";
 }
 
-// ─── UI de juego ──────────────────────────────────────────────────────────────
+// UI de juego
 
 function drawUI() {
   const barX = 60,
@@ -1574,7 +1598,7 @@ function drawDiffButton(img, x, hover, unlocked = true) {
   }
 }
 
-// ─── Pausa ────────────────────────────────────────────────────────────────────
+// Pausa
 
 function drawPauseButton() {
   const { x, y, r } = pauseBtn;

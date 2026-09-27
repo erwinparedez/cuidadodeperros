@@ -1,4 +1,5 @@
 import { resetInstrucciones } from "./instrucciones.js";
+import { mostrarModalFelicidades } from "./progress-manager.js";
 
 window.juegoActual = null;
 window.juegoActualId = null;
@@ -261,7 +262,7 @@ const cardInicial = document.querySelector("#customCard-a");
 if (cardInicial) {
   seleccionarCard(cardInicial);
 }
-// --- LÓGICA DE PROGRESIÓN Y DESBLOQUEOS (CORREGIDA Y COMPLETA) ---
+// LÓGICA DE PROGRESIÓN Y DESBLOQUEOS
 
 const notificacionesMostradas = { A: false, B: false, C: false };
 
@@ -298,31 +299,28 @@ function avatarCompleto(avatar) {
 function mostrarNotificacion(avatarTerminado) {
   if (notificacionesMostradas[avatarTerminado]) return;
 
-  // Creamos o buscamos el contenedor de la notificación de forma dinámica para asegurar que exista
-  let notif = document.getElementById("notificacion-desbloqueo");
-  if (!notif) {
-    notif = document.createElement("div");
-    notif.id = "notificacion-desbloqueo";
-    notif.className = "notificacion-msj";
-    const menuJuegosEl = document.getElementById("menu-juegos");
-    if (menuJuegosEl) menuJuegosEl.appendChild(notif);
-  }
-
   if (avatarTerminado === "A" || avatarTerminado === "B") {
+    // Comportamiento sin cambios: notificación pequeña
+    let notif = document.getElementById("notificacion-desbloqueo");
+    if (!notif) {
+      notif = document.createElement("div");
+      notif.id = "notificacion-desbloqueo";
+      notif.className = "notificacion-msj";
+      const menuJuegosEl = document.getElementById("menu-juegos");
+      if (menuJuegosEl) menuJuegosEl.appendChild(notif);
+    }
+
     notif.textContent = "Has desbloqueado nuevos personajes";
+    notif.classList.add("mostrar");
+    notificacionesMostradas[avatarTerminado] = true;
+
+    setTimeout(() => {
+      notif.classList.remove("mostrar");
+    }, 10000);
   } else if (avatarTerminado === "C") {
-    notif.textContent = "¡Felicidades! Has completado todo el juego";
+    notificacionesMostradas[avatarTerminado] = true;
+    mostrarModalFelicidades();
   }
-
-  notif.classList.add("mostrar");
-  notificacionesMostradas[avatarTerminado] = true;
-  // console.log(
-  //   `Mostrando notificación por completar avatar: ${avatarTerminado}`,
-  // );
-
-  setTimeout(() => {
-    notif.classList.remove("mostrar");
-  }, 10000);
 }
 
 export function actualizarProgresion() {
@@ -372,7 +370,7 @@ export function actualizarProgresion() {
   // console.log("=== FIN ACTUALIZACIÓN DE MENÚ ===");
 }
 
-// --- CONECTAR AL BOTÓN "VOLVER" Y CAMBIO DE AVATAR ---
+// CONECTAR AL BOTÓN "VOLVER" Y CAMBIO DE AVATAR
 const btnVolverMenu = document.getElementById("btn-nav1");
 if (btnVolverMenu) {
   btnVolverMenu.addEventListener("click", () => {

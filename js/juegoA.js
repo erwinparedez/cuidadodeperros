@@ -108,7 +108,7 @@ const cardsData = [
   },
   {
     img: "src/game-a/gamea-t5.webp",
-    subtitle: "siempre pregunta a un adulto",
+    subtitle: "Siempre pregunta a un adulto",
     text: "Antes de darle algo nuevo, pide ayuda a un adulto.",
   },
   {
@@ -120,29 +120,53 @@ const cardsData = [
 
 let cardImages = [];
 
-//Configuraciones
+// Configuraciones
 const configs = {
   easy: {
     time: 60,
     target: 100,
-    fallSpeed: 2.8,
+    fallSpeed: 2.0,
     spawnInterval: 1100,
   },
 
   normal: {
     time: 60,
     target: 150,
-    fallSpeed: 3,
+    fallSpeed: 2.6,
     spawnInterval: 900,
   },
 
   hard: {
     time: 60,
-    target: 200,
-    fallSpeed: 3.5,
+    target: 250,
+    fallSpeed: 3,
     spawnInterval: 700,
   },
 };
+
+//Pruebas
+// const configs = {
+//   easy: {
+//     time: 60,
+//     target: 10,
+//     fallSpeed: 4,
+//     spawnInterval: 1100,
+//   },
+
+//   normal: {
+//     time: 60,
+//     target: 10,
+//     fallSpeed: 4,
+//     spawnInterval: 900,
+//   },
+
+//   hard: {
+//     time: 60,
+//     target: 10,
+//     fallSpeed: 4,
+//     spawnInterval: 700,
+//   },
+// };
 
 // Botones especiales
 const coverBtn = { x: 750, y: 390, w: 210, h: 90 };
@@ -168,7 +192,7 @@ let player;
 
 const ITEM_SIZE = 90;
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// Helpers
 
 function roundRect(ctx, x, y, w, h, r) {
   ctx.beginPath();
@@ -217,8 +241,7 @@ function isLevelUnlocked(levelIndex) {
   return levelIndex <= maxUnlockedLevel;
 }
 
-// ── Persistencia de progreso por avatar ──────────────────────────────────────
-
+// Persistencia de progreso por avatar
 const PROGRESS_STORAGE_KEY = "gameA_progresoPorAvatar";
 
 function loadAllProgress() {
@@ -263,8 +286,7 @@ function refreshGlobalCompletionFlags() {
   return flags;
 }
 
-// ─── Cursor helpers ───────────────────────────────────────────────────────────
-
+// Cursor helpers
 function showCursor(isPointer = false) {
   canvas.style.cursor = isPointer ? "pointer" : "default";
   clearTimeout(cursorTimeout);
@@ -281,8 +303,7 @@ function hideCursor() {
   canvas.style.cursor = "none";
 }
 
-// ─── init ─────────────────────────────────────────────────────────────────────
-
+// init
 export function init() {
   canvas = document.getElementById("game");
   ctx = canvas.getContext("2d");
@@ -1095,7 +1116,7 @@ function update() {
   }
 }
 
-// ─── Draw ─────────────────────────────────────────────────────────────────────
+// Draw
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);

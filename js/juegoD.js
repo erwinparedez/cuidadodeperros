@@ -324,7 +324,14 @@ const configs = {
   hard: { time: 300, count: 10 },
 };
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// Pruebas
+// const configs = {
+//   easy: { time: 180, count: 1 },
+//   normal: { time: 180, count: 1 },
+//   hard: { time: 300, count: 1 },
+// };
+
+// Helpers
 
 function roundRect(ctx, x, y, w, h, r) {
   ctx.beginPath();
@@ -434,13 +441,12 @@ function refreshGlobalCompletionFlags() {
   return flags;
 }
 
-// ─────────────────────────────────────────────
 export function init() {
   canvas = document.getElementById("game");
   ctx = canvas.getContext("2d");
   const cardVariant = (window.customCardSeleccionada || "A").toUpperCase();
 
-  // ── Imágenes ──────────────────────────────
+  // Imágenes
 
   imgCover = new Image();
   const coverSrcs = {
@@ -522,7 +528,7 @@ export function init() {
     return img;
   });
 
-  // ── Estado inicial ─────────────────────────
+  // Estado inicial
 
   state = "cover";
   config = configs.easy;
@@ -559,7 +565,7 @@ export function init() {
   restartBtn = { x: 645, y: 270, r: 80 };
   diffBtn = { x: 825, y: 270, r: 80 };
 
-  // ── resize ─────────────────────────────────
+  // resize
 
   resizeHandler = () => {
     const rect = canvas.getBoundingClientRect();
@@ -570,7 +576,7 @@ export function init() {
   window.addEventListener("resize", resizeHandler);
   resizeHandler();
 
-  // ── mousemove ──────────────────────────────
+  // mousemove
 
   mouseMoveHandler = (e) => {
     const rect = canvas.getBoundingClientRect();
@@ -645,7 +651,7 @@ export function init() {
   };
   canvas.addEventListener("mousemove", mouseMoveHandler);
 
-  // ── mouseleave: pausa automática ───────────
+  // mouseleave: pausa automática
 
   mouseLeaveHandler = () => {
     if (state === "playing") paused = true;
@@ -657,7 +663,7 @@ export function init() {
   };
   canvas.addEventListener("mouseleave", mouseLeaveHandler);
 
-  // ── click ──────────────────────────────────
+  // click
 
   clickHandler = (e) => {
     const rect = canvas.getBoundingClientRect();
@@ -891,7 +897,7 @@ export function init() {
   };
   canvas.addEventListener("click", clickHandler);
 
-  // ── Temporizador ───────────────────────────
+  // Temporizador
 
   intervalTime = setInterval(() => {
     if (raceMode) {
@@ -913,7 +919,7 @@ export function init() {
     }
   }, 1000);
 
-  // ── Loop ───────────────────────────────────
+  // Loop
 
   function loop() {
     draw();
@@ -933,7 +939,6 @@ function showLevelIntro() {
   state = "levelIntro";
 }
 
-// ─────────────────────────────────────────────
 export function cleanup() {
   AudioManager.stopAll();
   window.removeEventListener("resize", resizeHandler);
@@ -946,8 +951,6 @@ export function cleanup() {
 
   canvas.style.cursor = "default";
 }
-
-// ─────────────────────────────────────────────
 
 function resetGame() {
   const source = getLevelItems(configKey);
@@ -1003,7 +1006,7 @@ function getMapImage() {
   return imgBgHard;
 }
 
-// ─── Draw ─────────────────────────────────────────────────────────────────────
+// Draw
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1035,7 +1038,7 @@ function draw() {
   if (state === "victory") drawVictory();
 }
 
-// ─── Portada ──────────────────────────────────────────────────────────────────
+// Portada
 
 function drawCover() {
   coverBtn.y = moduleCompletado ? 290 : 390;
@@ -1133,7 +1136,7 @@ function drawCover() {
   }
 }
 
-// ─── Intro de nivel ───────────────────────────────────────────────────────────
+// Intro de nivel
 
 function drawLevelIntro() {
   if (imgBackground.complete && imgBackground.naturalWidth > 0) {
@@ -1248,7 +1251,7 @@ function drawLevelIntro() {
   ctx.textAlign = "left";
 }
 
-// ─── Fondo del juego ──────────────────────────────────────────────────────────
+// Fondo del juego
 
 function drawBackground() {
   const mapImg = getMapImage();
@@ -1260,7 +1263,7 @@ function drawBackground() {
   }
 }
 
-// ─── Panel derecho ────────────────────────────────────────────────────────────
+// Panel derecho
 
 function drawPanel() {
   const px = PANEL_X;
@@ -1590,7 +1593,7 @@ function drawDiffButton(img, x, hover, unlocked = true) {
   }
 }
 
-// ─── Pausa ────────────────────────────────────────────────────────────────────
+// Pausa
 
 function drawPauseButton() {
   const { x, y, r } = pauseBtn;
